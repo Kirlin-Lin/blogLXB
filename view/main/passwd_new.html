@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" style="background: #f8f8f8">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="/public/images/favicon.ico" rel="shortcut icon">
+    <link rel="stylesheet" href="/public/css/choulouderen.css">
+    <title>输入新密码</title>
+</head>
+<body>
+<span id="header"></span>
+<section class="sgin_box">
+    <div class="sgin">
+        <h1>输入新密码</h1>
+        <h1 class="message"  id="errMessage"></h1>
+        <ul class="put">
+            <li>
+                <p>新密码</p>
+                <input type="password" id="passwd" placeholder="新密码">
+                <b><em></em></b>
+            </li>
+        </ul>
+        <p class="tishi">请输入新密码</p>
+        <button class="btn" onclick="passwd_new()">确认</button>
+    </div> 
+</section>
+<script src="/public/js/common.js"></script>    
+<script>
+    window.onload = function(){
+        
+        /* 显示头部和脚 */
+        get_head_foot();
+
+        var errMessage = document.getElementById("errMessage");
+        /* 用户登录 */
+        passwd_new = function(){
+            var data = {
+                regEmailMath:getQueryVariable("regEmailMath"),
+                passwd:document.getElementById("passwd").value
+            }
+            $.ajax({
+                url:"/api/post/passwd_new",
+                data:data,
+                success:function(res){
+                    console.log(res)
+                    if(res.code == 1){
+                        errMessage.innerHTML = res.message + ',1 秒后将前往登陆界面';
+                        setTimeout(function(){
+                            window.location.href = "/view/main/login";
+                        },1000);
+                    }else{
+                        errMessage.innerHTML = res.message;
+                    }
+                }
+            });
+        }
+    }
+</script>
+</body>
+</html>

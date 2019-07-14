@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="/public/images/favicon.ico" rel="shortcut icon">
+    <link rel="stylesheet" href="/public/css/choulouderen.css">
+    <link rel="stylesheet" href="/public/css/wangEditor.min.css">
+    <link rel="stylesheet" href="/public/css/loaders.css">
+    <title>写博客</title>
+</head>
+<body>
+<span id="header"></span>
+<dl class="write_article">
+    <!-- 表桥 -->
+    <dt class="l">
+        <div class="fls">
+            <p><span class="iconfont">&#xe602;</span>标签</p>
+            <ul class="list" id="category" onclick="selt_category(this)">
+                <!-- <li class="sel">node</li>
+                <li>css</li> -->
+            </ul>
+        </div>
+    </dt>
+   
+    <dt class="r">
+        <div class="name">
+            <input id="article_tit" type="text" placeholder="输入标题">
+            <button  onclick="post_article_fun()">更新</button>
+        </div>
+        <div class="tabr" id="tabr"></div>
+        <div class="editor" id="editor">
+            <p>如果发现bug请与 <b>523705068@qq.com</b> 联系</p>
+        </div>
+    </dt>
+</dl>
+<!-- 加载动画 -->
+<span class="none" id="loading">
+    <div class="shade"></div>
+    <div class="loader_box">
+        <div class="loader">
+            <div class="loader-inner line-scale-pulse-out-rapid">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </div>
+        <p id="loadingTxt">发布中</p>
+    </div>
+</span>
+<script src="/public/js/common.js"></script>
+<script type="text/javascript" src="/public/js/wangEditor.min.js"></script>
+<script>
+
+var category = document.getElementById("category");
+var loading = document.getElementById("loading");
+var loadingTxt = document.getElementById("loadingTxt");
+
+
+/* 获取头部和底部 */
+get_head_foot();
+
+var E = window.wangEditor
+var editor = new E('#tabr','#editor');
+// editor.customConfig.showLinkImg = false;//隐藏网路图片链接
+// editor.customConfig.uploadImgShowBase64 = true   // 使用 base64 保存图片
+editor.customConfig.uploadImgServer = '/upload/images';
+editor.customConfig.uploadImgMaxLength = 5;
+editor.customConfig.uploadImgMaxSize = 10 * 1024 * 1024;
+editor.customConfig.zIndex = 100;
+editor.customConfig.uploadImgHooks = {
+     // 如果服务器端返回的不是 {errno:0, data: [...]} 这种格式，可使用该配置
+    // （但是，服务器端返回的必须是一个 JSON 格式字符串！！！否则会报错）
+    customInsert: function (insertImg, result, editor){
+        if(result.errno == 0){
+            console.log(result)
+            insertImg(result.details_pic.url+"?thumbnail_pic="+result.thumbnail_pic.url);
+        }
+        console.log(result)
+    }
+};
+editor.create();
+
+
+
+
+/* 标签查询 */
+var cateId = "";
+var oldCateId = "";
+query_cate = function(cateID){
+    $.ajax({
+        url:"/router/cetegory",
+        data:{type:"all"},
+        success:function(res){
+            if(res.code == 3){
+                var str = "";
+                res.data.forEach((element,index) => {
+                    if(cateID == element.id){
+                        oldCateId = element.id;
+                        cateId = element.id;
+                        str += '<li class="sel" index="'+index+'" cateName="'+element.cateName
+                            +'" id="'+element.id+'">'+element.cateName+'</li>';
+                    }else{
+                        str += '<li   index="'+index+'" cateName="'+element.cateName
+                            +'" id="'+element.id+'">'+element.cateName+'</li>';
+                    }
+                });
+                category.innerHTML = str;
+            }
+        }
+    });
+}
+
+
+/* 文章查询 */
+var article_id = getQueryVariable("id");
+$.ajax({
+    url:"/router/article_details/",
+    data:{id:article_id},
+    success:function(res){
+        if(res.code == 1){
+            console.log(res)
+            var str = res.data.content
+                        .replace(/&quot;/g,'"')
+                        .replace(/&lt;/g,"<")
+                        .replace(/&gt;/g,">")
+                        .replace(/&times;/g,":");
+            article_tit.value = res.data.tit;
+            editor.txt.html(str);
+            query_cate(res.data.cateId);
+        }else{
+            alert(res.message);
+        }
+    }
+});
+
+/* 选择标签*/
+
+selt_category = function(obj){
+    var lis = obj.children;
+        cateId = event.target.getAttribute("id");
+        articleObj.cateName = event.target.getAttribute("cateName");
+        for(var i=0;i<lis.length;i++){
+            lis[i].className = "";
+        }
+        event.target.className = "sel";
+}
+
+/* 发布文章 */
+var articleObj  = {};
+post_article_fun = function(){
+    var imgs = document.getElementById("editor").getElementsByTagName("img");
+        
+        if(imgs.length >= 1){
+            articleObj.showImg = getParamSrc("thumbnail_pic",imgs[0].getAttribute("src"));
+        }else{
+            articleObj.showImg = "no"
+        }
+    var content = editor.txt.html()
+                .replace(/"/g,"&quot;")
+                .replace(/</g,"&lt;")
+                .replace(/>/g,"&gt;")
+                .replace(/:/g,"&times;");
+    var ptx = editor.txt.text();
+    var json = editor.txt.getJSON();
+        console.log(content);
+            loading.style.display = "block";
+            articleObj.tit = document.getElementById("article_tit").value;
+            articleObj.content = content;
+            articleObj.cateId = cateId;
+            articleObj.oldCateId = oldCateId;
+            articleObj.ptx = ptx.substr(0,100);
+            articleObj.type = "modify";
+            articleObj.article_id = article_id;
+            $.ajax({
+                url:"/router/post_article",
+                data:articleObj,
+                success:function(res){
+                    console.log(res)
+                    if(res.code == 6){
+                        loadingTxt.innerHTML = res.message;
+                        setTimeout(function(){
+                            window.location.href = "/view/main/article_details?id="+res.data.articleID
+                        },1000);
+                    }else{
+                        alert(res.message)
+                        loading.style.display = "none";
+                    }
+                }
+            });
+}
+</script>
+</body>
+</html>

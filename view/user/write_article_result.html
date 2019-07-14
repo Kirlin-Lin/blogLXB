@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="/public/images/favicon.ico" rel="shortcut icon">
+    <link rel="stylesheet" href="/public/css/choulouderen.css">
+    <title>发布结果</title>
+</head>
+<body>
+<span id="header"></span>
+<section class="write_article_result">
+    <div class="info">
+        <div class="ico">
+            <img src="/public/images/ok_fabu.png" alt="">
+        </div>
+        <h1>发布成功</h1>
+        <div class="des" id="des"></div>
+    </div>
+</section>
+<script src="/public/js/common.js"></script>
+<script>
+/* 获取头部信息 */
+get_head_foot();
+
+var id = getQueryVariable("id");
+var tit = getQueryVariable("tit");
+    window.onload = function(){
+        var des = document.getElementById("des");
+        des.innerHTML = '<a href="/view/main/article_details?id='+id+'">'+decodeURI(tit)+'</a>';
+    }
+</script>
+</body>
+</html>

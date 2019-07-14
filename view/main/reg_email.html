@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="/public/images/favicon.ico" rel="shortcut icon">
+    <title>邮箱验证</title>
+    <link rel="stylesheet" href="/public/css/choulouderen.css">
+</head>
+<body>
+<section class="reg_email">
+    <div class="ico"><img src="/public/images/email_ok.png" alt=""></div>
+    <h1>路小北博客邮箱验证</h1>
+    <h1 style="color: red" id="errMessage"></h1>
+    <div class="go_login" id="go_login"></div>
+</section>      
+<script src="/public/js/common.js"></script>
+<script>
+    window.onload = function(){
+        var arr = location.search.replace("?","").split("=");
+        var data = {regEmailMath:arr[1]};
+        var go_login = document.getElementById("go_login");
+        var errMessage = document.getElementById("errMessage");
+        $.ajax({
+            url:"/api/post/reg_email",
+            data:data,
+            success:function(res){
+                console.log(res)
+                if(res.code == 2){
+                    go_login.innerHTML = '<a href="/view/main/login">前往登录...</a>';
+                }else{
+                    go_login.innerHTML = '<a href="/view/main/regist">重新注册...</a>';
+                }
+                errMessage.innerHTML = res.message;
+            }
+        });
+    }
+    
+</script>
+</body>
+</html>

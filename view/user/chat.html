@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="/public/images/favicon.ico" rel="shortcut icon">
+    <link rel="stylesheet" href="/public/css/choulouderen.css">
+    <title id="title">聊天室</title>
+    <style>body,html{height: 100%;box-sizing: border-box;}</style>
+</head>
+<body style="background:url(/public/room/timg.jpg) center center no-repeat;background-size: cover;">
+<span id="header"></span>
+<section class="chat">
+    <div class="l">
+        <div class="list" id="quliao_list">
+            <!-- <li class="sel">
+                <div class="ico"><img src="/public/room/web.jpg" alt=""></div>
+                <em>web前端</em>
+            </li>
+            <li>
+                <div class="ico"><img src="/public/room/chuiniu.jpg" alt=""></div>
+                <em>web前端</em>
+            </li> -->
+        </div>
+    </div>
+    <div class="r">
+        <div class="content">
+            <div class="tit"><em id="ql_tit"></em><span class="line_nu">在线人数: <span id="count"></span>  </span></div>
+            <div class="ct" id="ct_content">
+                <ul class="list" id="msg_content">
+                   <!--  <li class="Y">
+                        <div class="ico"><img src="/public/room/web.jpg" alt=""></div>
+                        <div class="info">
+                            <div class="name">路小北</div>
+                            <div class="txt"> <div class="pm">sdf-Standard Delay Format：
+                                    标准延时格式文件。ASIC工程师，需要时常
+                                    和这个东西打交道，比如synthesis,STA,pos
+                                    t-simulation,eco。SDF-Spatial Data Form
+                                    理空间数据格式。是一种易于使用的文件型空
+                                    间数据格式，它能够在一个文件
+                                    中以表格的方式存储多种地理...</div></div>
+                        </div>
+                    </li>
+                    <li class="sys">
+                        <em>路小北进入聊天室</em>
+                    </li>
+                    <li class="sys">
+                        <em>路小北进入聊天室</em>
+                    </li>
+                    <li class="M">
+                        <div class="ico"><img src="/public/room/chuiniu.jpg" alt=""></div>
+                        <div class="info">
+                            <div class="name">施瓦辛格</div>
+                            <div class="txt"><div class="pm">sdf-Standard Delay Format.</div></div>
+                        </div>
+                    </li>
+                    <li class="M">
+                        <div class="ico"><img src="/public/room/chuiniu.jpg" alt=""></div>
+                        <div class="info">
+                            <div class="name">施瓦辛格</div>
+                            <div class="txt"><div class="pm">真心不知道怎么办了</div></div>
+                        </div>
+                    </li>
+                    <li class="M">
+                        <div class="ico"><img src="/public/room/chuiniu.jpg" alt=""></div>
+                        <div class="info">
+                            <div class="name">施瓦辛格</div>
+                            <div class="txt"><div class="pm"><img src="/public/face/pig_dai/00.gif"></div></div>
+                        </div>
+                    </li> -->
+                </ul>
+            </div>
+        </div>
+        <div class="putBox">
+            <div class="face_show" id="face_show">
+                <div class="name"><span  id="face_name"></span> <button onclick="close_face()" class="iconfont">&#xe639;</button></div>
+                <ul class="face_list" id="face_content" onclick="send_msg('face')">
+                  <!--   <li><img src="/public/face/egg/00.gif" alt=""></li> -->
+                </ul>
+            </div>
+            <div class="face" onclick='query_face("content")'>
+                <em>表情包 : </em>
+                <dl class="list" id="face_list">
+                    <!-- <dt class="pic">
+                        <img id="23742394239498" src="/public/face/egg/13.gif" alt="">
+                    </dt> -->
+                </dl>
+            </div>
+            <div class="put">
+                <div class="edip" id="edip" contenteditable="true"></div>
+               <div class="btn"> <button onclick="send_msg('text')">发送 Enter</button></div>
+            </div>
+        </div>
+    </div>
+</section>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/public/js/common.js"></script>
+<script> 
+
+window.onload = function(){
+    var face_content = document.getElementById("face_content");
+    var face_name = document.getElementById("face_name");
+    var face_show = document.getElementById("face_show");
+    var edip = document.getElementById("edip");
+    var ct_content = document.getElementById("ct_content");
+    var msg_content = document.getElementById("msg_content");
+    var count = document.getElementById("count");
+    var quliao_list = document.getElementById("quliao_list");
+    var ql_tit = document.getElementById("ql_tit");
+    var title = document.getElementById("title");
+    var user_Info = {
+        nick_name:getQueryVariable("nick_name"),
+        head_Url:getQueryVariable("head_img"),
+        userId:getQueryVariable("userId"),
+        roomID:getQueryVariable("roomID"),
+        roomName:getQueryVariable("roomName")
+    }
+    /* 查询房间列表 */
+    $.ajax({
+            url:'/router/rooms',
+            data:{},
+            success:function(res){
+                var index = getQueryVariable("index");
+                if(res.code == 1){
+                    var str = "";
+                    res.data.forEach((element,_index) => {
+                        if(index == _index){
+                            ql_tit.innerHTML = element.name;
+                            str += '<a  class="sel" href="/view/user/chat?roomID='
+                            +element.room+'&roomName='+element.name+'&index='+_index
+                            +'&head_img='+user_Info.head_Url+'&nick_name='+user_Info.nick_name
+                            +'&userId='+user_Info.userId+'" id="'+element.id+'"><div class="ico"><img src="'+element.ico_Url+'" alt="">'
+                            +'</div><em>'+element.name+'</em></a>';
+                        }else{
+                            str += '<a target="_blank" href="/view/user/chat?roomID='
+                            +element.room+'&roomName='+element.name+'&index='+_index
+                            +'&head_img='+user_Info.head_Url+'&nick_name='+user_Info.nick_name
+                            +'&userId='+user_Info.userId+'" id="'+element.id+'"><div class="ico"><img src="'+element.ico_Url+'" alt="">'
+                            +'</div><em>'+element.name+'</em></a>';
+                        }
+                       
+                    });
+                    quliao_list.innerHTML = str;
+                }
+            }
+    });
+    edip.focus();
+
+
+     /* 监听用户是否在当前页面 */
+    var roomName = getQueryVariable("roomName");
+        title.innerHTML = decodeURI(roomName);
+    var hidePage = 0;
+    var hiddenProperty = 'hidden' in document ? 'hidden' :    
+    'webkitHidden' in document ? 'webkitHidden' :    
+    'mozHidden' in document ? 'mozHidden' :  null;
+    var visibilityChangeEvent = hiddenProperty.replace(/hidden/i, 'visibilitychange');
+    var onVisibilityChange = function(){
+        if (!document[hiddenProperty]) {   
+            hidePage = 0;
+            console.log('页面激活')
+            title.innerHTML = decodeURI(roomName);
+        }else{
+            hidePage = 1; 
+            console.log('页面非激活');
+        }
+    }
+    document.addEventListener(visibilityChangeEvent, onVisibilityChange);
+
+    
+    
+
+    var socket = io.connect()
+    socket.emit("joinRoom",user_Info);
+    socket.on("sys",function(rst){
+        count.innerHTML = rst.count;
+        var Oli = document.createElement("li");
+            Oli.className = "sys";
+        var sTR = '<em>'+decodeURI(rst.user.nick_name) + decodeURI(rst.msg) +'</em>';
+            Oli.innerHTML =  sTR;
+            msg_content.appendChild(Oli);
+    }); 
+    socket.on("msg",function(msg,userInfo){
+        if(hidePage == 1){
+            title.innerHTML = "有新消息.."
+        }
+        var Oli = document.createElement("li");
+        var sTR = "";
+            if(user_Info.userId == userInfo.userId){
+                Oli.className = "M";
+            }else{
+                Oli.className = "Y";
+            }
+            if(msg.type == "text"){
+                sTR = '<div class="ico"><img src="'+userInfo.head_Url+'" alt=""></div>'
+                    + '<div class="info"><div class="name">'+decodeURI(userInfo.nick_name)+'</div><div class="txt"><div class="pm">'+msg.ptx+'</div>'
+                    +'</div></div>';
+            }else if(msg.type == "face"){
+                sTR = '<div class="ico"><img src="'+userInfo.head_Url+'" alt=""></div>'
+                    + '<div class="info"><div class="name">'+decodeURI(userInfo.nick_name)
+                    +'</div><div class="txt"><div class="pm"><img onload="over_face()" src="'+msg.ptx+'"></div>'
+                    +'</div></div>';
+            }
+        
+            Oli.innerHTML =  sTR;
+            msg_content.appendChild(Oli);
+            get_bom_lt();
+    });
+    /* 表情包加载完成立马变化 */
+    over_face = function(){
+        get_bom_lt();
+    }
+
+    /* 发送消息 */
+    send_msg = function(type){
+        var msgObj = {};
+            if(type == "face"){
+                if(event.target.tagName == "IMG" ){
+                    msgObj.ptx = event.target.getAttribute("src");
+                    msgObj.type = "face";
+                    socket.send(msgObj);
+                    edip.focus();
+                    close_face();
+                }
+            }else if(type == "text"){
+                var content = edip.innerHTML; 
+                if(content == ""){
+                    alert("请不要发送空内容");
+                }else{
+                    msgObj.ptx = content;
+                    msgObj.type = "text";
+                    socket.send(msgObj);
+                    edip.innerHTML = "";
+                    setTimeout(() => {
+                        edip.focus();
+                    }, 0);
+                }
+            }
+    }
+    /* enter發送 */
+    document.addEventListener("keydown",function(){
+
+        if (!event.shiftKey && event.keyCode === 13){
+            send_msg("text");
+            if(event.which == 13){
+                event.cancelBubble=true;
+                event.preventDefault();
+                event.stopPropagation()
+            }
+        }
+    });
+    /* 获取头部和底部 */
+    get_head_foot();
+
+
+    /* 表情包查询 */
+    query_face = function(str){
+        var faceId = "";
+        if(str == "id"){
+
+        }else if(str == "content"){
+            if(event.target.tagName == "IMG"){
+                faceId = event.target.getAttribute("id");
+            }
+        }
+        $.ajax({
+            url:'/router/face',
+            data:{faceId:faceId},
+            success:function(res){
+                if(res.code == 1){
+                    var face_list = document.getElementById("face_list");
+                    var str = "";
+                        for(var i=0;i<res.data.length;i++){
+                            str += '<dt class="pic"><img open="0" name="'+res.data[i].name
+                                +'" id="'+res.data[i].id+'" src="'+res.data[i].show_Url+'"></dt>';
+                        }
+                        face_list.innerHTML = str;
+                }else if(res.code == 2){
+                    var str = "";
+                        for(var i=0;i<res.data.face_list.length;i++){
+                            str += '<li><img src="'+res.data.face_list[i]+'"></li>';
+                        }
+                        face_content.setAttribute("id",res.data.id);
+                        face_content.innerHTML = str;
+                        face_name.innerHTML = res.data.name;
+                        face_show.style.display = "block";
+                }
+            }
+        });
+    }
+
+    /* 查询所有表情包集合id */
+    query_face("id");
+
+    /* 关闭表情包内容 */
+    close_face = function(){
+        face_show.style.display = "none";
+    }
+
+    /* 显示聊天最底部 */
+    get_bom_lt = function(){
+        var scrollHeight =  ct_content.scrollHeight;
+            ct_content.scrollTop = scrollHeight
+    }
+}
+</script>
+</body>
+</html>

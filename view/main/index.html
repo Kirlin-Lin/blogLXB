@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="/public/images/favicon.ico" rel="shortcut icon">
+    <link rel="stylesheet" href="/public/css/choulouderen.css">
+    <link rel="stylesheet" href="/public/css/swiper.min.css">
+    <title>首页</title>
+</head>
+<body>
+<span id="header"></span>
+<section class="main">
+    <!-- banner -->
+    <div class="banner">
+        <div class="swiper-container sipwer_01">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide"><img src="/public/images/banner_01.jpg" alt="banner"></div>
+                <div class="swiper-slide"><img src="/public/images/banner_02.jpg" alt="banner"></div>
+                <div class="swiper-slide"><img src="/public/images/banner_03.jpg" alt="banner"></div>
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
+    </div>
+    <!-- content -->
+    <dl class="content_box">
+        <dt class="l">
+            <ul class="article" id="article"></ul>
+            <!-- <div class="pages_search">
+                <span class="up_down">
+                    <button onclick="up_down_page('up')">上一页</button>
+                    <button onclick="up_down_page('down')">下一页</button>
+                </span>
+                <div class="fenyeqi" id="pages"></div>
+                <div class="put_page">
+                    <span>第</span>
+                    <input type="text" id="page" value="1">
+                    <span>页</span>
+                    <button onclick="more_page()">跳转</button>
+                </div>
+            </div> -->
+            <div class="pages_search">
+                 <div class="fenyeqi" id="pages"></div>
+             </div>
+             <div class="getMore" onclick="query_article_fun()"><button>获取更多</button></div>
+        </dt>
+        <dt class="r">
+            <h3>热门标签</h3>
+            <ul class="category" id="category" onclick="query_cate()"></ul>
+        </dt>
+    </dl>
+</section>
+    <!-- <div class="header">
+        <div class="info">
+            <div class="logo"><a href="/"><img src="/public/images/logo.png" alt=""></a></div>
+            <div class="user_info">
+                <a class="img_user_head" href="/view/user/user_info"><img src="/public/images/user_head_5cfa8a1e28afe1217ce32687.jpg"></a>
+                <a href="" class="iconfont write_btn">&#xe673; 写博客</a>
+            </div>
+            <div class="sign_box">
+                <a href="/view/main/login"><button class="sgin_in">登录</button></a>
+                <a href="/view/main/regist"><button class="sgin_up">注册</button></a>
+            </div>
+        </div>
+    </div>
+    <div class="footer">路小北   粤ICP备16068758号-2</div> -->
+  
+
+    <!-- 导航 -->
+  <!--   <div class="category" id="category" onclick="query_cate()"></div> -->
+<div class="footer_box">
+    <span id="footer"></span> 
+    <script src="/public/js/cnzz.js"></script>
+</div>
+  
+<!-- <span class="none">
+<div class="shade"></div>
+    <div class="message_pop">
+      <h3>信息提示标题</h3>
+        <div class="ct">确认删除文章《sublime 最新版本3200激活码》，文章将被移动到回收站，您可以在那里恢复它。60天后将被彻底删除</div>
+        <div class="btns">
+            <button class="cancel">取消</button>
+            <button class="sure">确定</button>
+        </div>
+    </div>
+</span> -->
+<script src="/public/js/common.js"></script>
+<script src="/public/js/swiper.min.js"></script>
+<script>
+window.onload = function(){
+    /* swiper */
+    var swiper = new Swiper('.sipwer_01', {
+        pagination: {
+            el: '.swiper-pagination',
+            dynamicBullets: true,
+        },
+        loop : true,
+        speed:1000,
+        autoplay : {
+            delay:3000
+        },
+    });
+    /* 获取头部和底部 */
+    get_head_foot();
+
+    /* 查询标签列表 */
+    $.ajax({
+        url:"/router/cetegory",
+        data:{type:"index"},
+        success:function(res){
+            var category = document.getElementById("category");
+            if(res.code == 0){
+                category.innerHTML = "暂无分类";
+            }else if(res.code == 1){
+               
+                var str = '<li class="sel" index="0" id="">全部</li>';
+                res.data.forEach((element,index) => {
+                    str += '<li count="'+element.count+'" index="'+(index+1)+'" id="'+element.id+'">'+element.category_name +'</li>';
+                });
+                category.innerHTML = str;
+            }
+        }
+    });
+
+    
+
+
+    /* 文章查询 */
+    var queryA = {
+        page:0,
+    };
+    var article = document.getElementById("article");
+    var pages = document.getElementById("pages");
+    query_article_fun = function(){
+        queryA.page += 1;
+        $.ajax({
+            url:"/router/query_artice",
+            data:queryA,
+            success:function(res){
+                if(res.code == 2){
+                    pages.innerHTML = '共 '+res.count+' 条数据';
+                    var Str = "";
+                    res.data.forEach(element => {
+                        if(element.showImg == "no"){
+                            Str += '<li><h3><a href="/view/main/article_details?id='+element.id+'">'+element.tit+'</a></h3>'
+                                +'<div class="ptx">'+element.ptx+'</div>'
+                                +'<div class="datas"><p class="fl"><span>'+element.category+'</span></p>'
+                                +'<p class="name">'+element.nick_name+'</p><p class="n">'
+                                +'<span class="iconfont">&#xe608; </span><span> '+element.num
+                                +'</span><span class="iconfont"> &#xe7cc; </span><span> '+element.comment+'</span></p>'
+                                +'</div></li>';
+                        }else{
+                            Str += '<li class="hove-img"><h3><a href="/view/main/article_details?id='+element.id+'">'+element.tit+'</a></h3>'
+                                +'<div class="ptx">'+element.ptx+'</div>'
+                                +'<div class="datas"><p class="fl"><span>'+element.category+'</span></p>'
+                                +'<p class="name">'+element.nick_name+'</p><p class="n">'
+                                +'<span class="iconfont">&#xe608; </span><span> '+element.num
+                                +'</span><span class="iconfont"> &#xe7cc; </span><span> '+element.comment+'</span></p>'
+                                +'</div><div class="oImg" style="background: '
+                                +'url('+element.showImg+') center center no-repeat;background-size: cover;"></div></li>';
+                        }
+                    });
+                    article.innerHTML = article.innerHTML + Str;
+                }else if(res.code == 3){
+                    alert(res.message);
+                }
+            }
+        });
+    }
+    query_article_fun();
+
+
+    /* 分类文章查询 */
+    query_cate = function(){
+        if(event.target.tagName == "LI"){
+            if(queryA.page !== 0){
+                queryA.page = 0;
+            }
+            queryA.cateID = event.target.getAttribute("id");
+            article.innerHTML = "";
+            query_article_fun();
+            var index = event.target.getAttribute("index");
+            var cates = event.currentTarget.children;
+                for(var element of cates){
+                    element.className = "";
+                } 
+                cates[index].className = "sel";
+        }
+    }
+}
+</script>
+
+</body>
+</html>

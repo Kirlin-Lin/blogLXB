@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="/public/images/favicon.ico" rel="shortcut icon">
+    <link rel="stylesheet" href="/public/css/choulouderen.css">
+    <title>个人中心</title>
+</head>
+<body>
+<span id="header"></span>
+
+<section class="user_info_box">
+    <div class="l">
+        <div class="fls">
+            <p><span class="iconfont">&#xe667; </span> 分类</p>
+            <ul class="category" id="category" onclick="query_cate()"></ul>
+        </div>
+       <!--  <div class="fls">
+            <p><span class="iconfont">&#xe667; </span> 我的发布</p>
+        </div> -->
+      <!--   <h1 class="my_fbu">我的发布</h1> -->
+     <!--  <ul class="article">
+            <li class="hove-img">
+                <h3><a href="">这是一个测试</a></h3>
+                <div class="ptx">阿斯蒂芬斯蒂芬</div>
+                <p class="timer">2019-06-21</p>
+                <div class="datas">
+                    <p class="fl"><span>css</span></p>
+                    <p class="name">这是一个昵称</p>
+                    <p class="n"><span class="iconfont">&#xe608; </span><span> 22</span></p>
+                </div>
+                <div class="oImg" style="background: url(http://localhost/public/article.pic/Q6pijPmG2Ln92K-5A9Cs6-RA.png) center center no-repeat;background-size: cover;"></div>
+            </li>
+        </ul> -->
+        <!-- 文章列表 -->
+        <ul class="article" id="article">
+
+        </ul>
+
+        <div class="pages_search">
+           <!--  <span class="up_down">
+                <button onclick="up_down_page('up')">上一页</button>
+                <button onclick="up_down_page('down')">下一页</button>
+            </span> -->
+            <div class="fenyeqi" id="pages"></div>
+            <!-- <div class="put_page">
+                <span>第</span>
+                <input type="text" id="page" value="1">
+                <span>页</span>
+                <button onclick="more_page()">跳转</button>
+            </div> -->
+        </div>
+        <div class="getMore" onclick="query_article_fun()"><button>获取更多</button></div>
+    </div>
+    <div class="r">
+        <div class="user_data">
+            <div class="nm_head" id="user_head">
+                <!-- <div class="oImg"><img src="/public/images/tanglili2.png" alt=""></div>
+                <h3>唐丽丽</h3> -->
+            </div>
+            <!-- <h4 class="nick_name">唐丽丽</h4> -->
+            <div class="grjs">
+                <p class="name">个人简介</p>
+                <pre class="jj_ct" id="pre"></div>
+            <div class="inof">
+                <p class="name">个人简介</p>
+                <ul class="list" id="userInfo">
+                   <!--  <li>昵称：<span>唐丽丽</span></li>
+                    <li>邮件：<span>523705068@qq.com</span></li>
+                    <li>性别：<span>女</span></li> -->
+                </ul>
+            </div>
+            <div class="edtor"> <a href="/view/user/modify_userInfo">修改</a><button onclick="out_login()">退出</button></div>
+        </div>
+    </div>
+</section>
+<script src="/public/js/common.js"></script>
+<script> 
+
+window.onload = function(){
+    
+    /* 获取头部和底部 */
+    get_head_foot()
+   
+    /* 个人信息查询 */
+    $.ajax({
+        url:'/router/userInfo/',
+        data:{},
+        success:function(res){
+            if(res.code == 1){
+                var pre =  document.getElementById("pre");
+                var userInfo = document.getElementById("userInfo");
+                var user_head = document.getElementById("user_head");
+                pre.innerHTML = res.data.introduce;
+                user_head.innerHTML = '<div class="oImg"><img src="'+res.data.head_img+'"></div><h3>'+res.data.nick_name+'</h3>'
+                userInfo.innerHTML = ' <li>昵称：<span>'
+                                    + res.data.nick_name
+                                    +'</span></li><li>邮件：<span>'
+                                    + res.data.username
+                                    +'</span></li><li>性别：<span>'
+                                    + res.data.sex
+                                    +'</span></li>';
+               
+            }
+        }
+    });
+
+    
+    /* 查询标签列表 */
+    $.ajax({
+        url:"/router/cetegory",
+        data:{type:"user"},
+        success:function(res){
+            var category = document.getElementById("category");
+            if(res.code == 0){
+                category.innerHTML = "暂无分类";
+            }else if(res.code == 1){
+               
+                var str = '<li class="sel" index="0" id="">全部</li>'
+                ;
+                res.data.forEach((element,index) => {
+                    str += '<li count="'+element.count+'" index="'+(index+1)+'" id="'+element.id+'">'+element.category_name +'</li>';
+                });
+                category.innerHTML = str;
+            }
+        }
+    });
+
+    /* 退出登录 */
+    out_login = function(){
+        $.ajax({
+            url:'/api/post/out_login',
+            data:{login_state:0},
+            success:function(res){
+                if(res.code == 1){
+                    window.location.reload();
+                }
+            }
+        });
+    }
+
+    /* 文章查询 */
+    var queryA = {
+        page:0,
+        userID:getQueryVariable("userID")
+    };
+    var article = document.getElementById("article");
+    var pages = document.getElementById("pages");
+    query_article_fun = function(){
+        queryA.page += 1;
+        $.ajax({
+            url:"/router/query_artice",
+            data:queryA,
+            success:function(res){
+                pages.innerHTML = '共 '+res.count+' 条数据';
+                
+                if(res.code == 1){
+                    article.innerHTML = res.message;
+                }else if(res.code == 2){
+                    var Str = "";
+                    res.data.forEach(element => {
+                        if(element.showImg == "no"){
+                            Str += '<li><h3><a href="/view/main/article_details?id='+element.id
+                                +'">'+element.tit+'</a></h3>'
+                                +'<div class="ptx">'+element.ptx+'</div>'
+                                +'<div class="datas"><p class="fl"><span>'+element.category+'</span></p>'
+                                +'<p class="name">'+element.nick_name+'</p><p class="n">'
+                                +'<span class="iconfont">&#xe608; </span><span> '+element.num
+                                +'</span><span class="iconfont"> &#xe7cc; </span><span> '+element.comment+'</span></p>'
+                                +'</div></li>';
+                        }else{
+                            Str += '<li class="hove-img"><h3><a href="/view/main/article_details?id='+element.id
+                                +'">'+element.tit+'</a></h3>'
+                                +'<div class="ptx">'+element.ptx+'</div>'
+                                +'<div class="datas"><p class="fl"><span>'+element.category+'</span></p>'
+                                +'<p class="name">'+element.nick_name+'</p><p class="n">'
+                                +'<span class="iconfont">&#xe608; </span><span> '+element.num
+                                +'</span><span class="iconfont"> &#xe7cc; </span><span> '+element.comment+'</span></p>'
+                                +'</div><div class="oImg" style="background: '
+                                +'url('+element.showImg+') center center no-repeat;background-size: cover;"></div></li>';
+                        }
+                    });
+                    article.innerHTML = article.innerHTML + Str;
+                }else if(res.code == 3){
+                    alert(res.message);
+                }
+            }
+        });
+    }
+    query_article_fun();
+
+    /* 分类文章查询 */
+    query_cate = function(){
+        if(event.target.tagName == "LI"){
+            if(queryA.page !== 0){
+                queryA.page = 0;
+            }
+            queryA.cateID = event.target.getAttribute("id");
+            article.innerHTML = "";
+            query_article_fun();
+            var index = event.target.getAttribute("index");
+            var cates = event.currentTarget.children;
+                for(var element of cates){
+                    element.className = "";
+                } 
+                cates[index].className = "sel";
+        }
+    }
+}
+</script>
+
+</body>
+</html>

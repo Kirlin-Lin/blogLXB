@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="/public/images/favicon.ico" rel="shortcut icon">
+    <link rel="stylesheet" href="../../public/css/choulouderen.css">
+   <!--  <link rel="stylesheet" href="/public/css/wangEditor.min.css"> -->
+    <title id="title">路生</title>
+</head>
+<body>
+<span id="header"></span>
+<section class="article_detailes">
+    <!-- <span>
+        <h1>这是一个标题</h1>
+        <div class="userInfo">
+            <p class="oImg"><img src="/public/images/default_head.jpg" alt=""></p>
+            <dl>
+                <dt class="name">我是一只莎婚纱</dt>
+                <dt class="time_num">
+                    <em class="t">2019-06-08 22:32</em>
+                    <em><span class="iconfont">&#xe608; </span><span> 250</span></em>
+                </dt>
+            </dl>
+            <span id="modify" class="modify">
+                    <a  href="/view/user/modify_article?id=5d2029d7f8ca032aa20512c1" >编辑</a>
+            </span>
+        </div>
+    </span> -->
+
+    <h1 id="titName">你好</h1>
+    <div class="userInfo">
+        <p class="oImg"><img id="headImg"></p>
+        <dl>
+            <dt class="name" id="nickName"></dt>
+            <dt class="time_num">
+                <em class="t" id="timer"></em>
+                <em><span class="iconfont">&#xe608; </span><span id="sees">0</span></em>
+                <em><span class="iconfont">&#xe7cc;  </span><span id="comments">0</span></em>
+            </dt>
+        </dl>
+        <span class="modify" id="modify">
+           <!--  <a href="/view/user/modify_article?id=5d24e90be0cc560a700cfbdb">编辑</a> -->
+        </span>
+    </div>
+
+    <div  class="content w-e-text" id="content">内容</div>
+
+    <div class="btnDel" id="btnDel">
+        <!-- <button class="iconfont"> &#xe600; 删除此文章</button> -->
+    </div>
+
+    <div class="comment">
+        <div class="nologin_comment" id="nologin_comment">
+            <p><a href="/view/main/login">登录</a><em>后发表评论</em></p>
+        </div>
+        <div class="put">
+                <textarea id="commmentContent" placeholder="写下你的评论..."></textarea>
+              <div class="btn" id="commentBtn">
+                  <button class="cancel" id="cancelComment">取消</button>
+                  <button class="send" onclick="input_comment(this)">发送</button>
+              </div>
+        </div>
+
+         <h3 id="commentCoumnt">
+            <!--  <em>精彩评论 (10)</em> -->
+        </h3>
+        <!-- <ul class="user_comment">
+            <li>
+                <div class="userInfo"><p class="oImg"><img src="../../public/images/user_head_5d143dd44c95135eb4b69ca5.jpg?versions=6/27/2019, 11:57:07 AM" alt=""></p><dl><dt class="name">小雪</dt><dt class="time_num"><em class="t">2019-07-03 15:40:17</em><em><span>12楼</span></em></dt></dl></div>
+                <p>你好吗</p>
+                <span class="del"><button onclick="drop_comment(this)" id="5d24fbb10dcdc2008c3fab1a">删除</button></span>
+              
+            </li>
+            <li>
+                <div class="userInfo"><p class="oImg"><img src="../../public/images/user_head_5d143dd44c95135eb4b69ca5.jpg?versions=6/27/2019, 11:57:07 AM" alt=""></p><dl><dt class="name">小雪</dt><dt class="time_num"><em class="t">2019-07-03 15:40:17</em><em><span>12楼</span></em></dt></dl></div>
+                <p>你好吗</p>
+            </li>
+        </ul> -->
+        <ul class="user_comment" id="user_comment"></ul>
+        
+        <ul class="comment_pages" onclick="query_comment('more')" id="comment_pages">
+           <!--  <li class="sel">1</li>
+            <li>2</li> -->
+        </ul>
+    </div>
+</section>
+<script charset="utf-8" src="/public/js/common.js"></script>
+<script>
+ /* 获取头部和底部 */
+ get_head_foot();
+
+ /* 查询文章详情 */
+var titName = document.getElementById("titName");
+var title = document.getElementById("title");
+var content = document.getElementById("content");
+var headImg = document.getElementById("headImg");
+var nickName = document.getElementById("nickName");
+var timer = document.getElementById("timer");
+var sees = document.getElementById("sees");
+var comments = document.getElementById("comments");
+var modify = document.getElementById("modify");
+var btnDel = document.getElementById("btnDel");
+var nologin_comment = document.getElementById("nologin_comment");
+var commmentContent = document.getElementById("commmentContent");
+var id = getQueryVariable("id");
+    query_article = function(userId){
+        $.ajax({
+            url:"/router/article_details/",
+            data:{id:id},
+            success:function(res){
+                if(res.code == 1){
+                        if(userId == res.data.userId){
+                            modify.innerHTML = '<a  href="/view/user/modify_article?id='
+                                +res.data.id+'">编辑</a>';
+                            btnDel.innerHTML =  '<button onclick="drop_article()" class="iconfont"> &#xe600; 删除此文章</button>';
+                        }
+
+                        title.innerHTML = res.data.tit;
+                        titName.innerHTML = res.data.tit;
+                        headImg.src = res.data.head_img;
+                        nickName.innerHTML = res.data.nick_name;
+                        timer.innerHTML = res.data.timer;
+                        sees.innerHTML = res.data.num;
+
+                        content.innerHTML = res.data.content
+                                        .replace(/&quot;/g,'"')
+                                        .replace(/&lt;/g,"<")
+                                        .replace(/&gt;/g,">")
+                                        .replace(/&times;/g,":");
+                }else{
+                    content.innerHTML = res.message;
+                }
+            }
+        });
+    }
+
+ /* 获取url参数 */
+function getQueryVariable(variable){
+    var query = window.location.search.substring(1);
+    var vars = query.split("&");
+    for (var i=0;i<vars.length;i++) {
+            var pair = vars[i].split("=");
+            if(pair[0] == variable){return pair[1];}
+    }
+    return(false);
+}
+
+/* 个人信息查询 */
+var userID = "";
+$.ajax({
+    url:'/router/userInfo/',
+    data:{},
+    success:function(res){
+        if(res.code == 1){
+            commmentContent.style.display = "block";
+            userID = res.data.userId;
+            query_article(res.data.userId);
+        }else{
+            nologin_comment.style.display = "block";
+            query_article("user no login");
+        }
+        query_comment();
+    }
+});
+
+/* 评论查询 */
+var articleID = getQueryVariable("id");
+var comment_pages = document.getElementById("comment_pages");
+var user_comment = document.getElementById("user_comment");
+var commentCoumnt = document.getElementById("commentCoumnt");
+var currentPage = 1;
+query_comment = function(more){
+    if(more == "more"){
+        currentPage = event.target.getAttribute('index');
+    }
+    $.ajax({
+        url:'/router/ouputCommment/',
+        data:{
+            articleID:articleID,
+            currentPage:currentPage
+        },
+        success:function(res){
+            if(res.code == 1){
+                /* 总评论数 */
+                commentCoumnt.innerHTML = '<em>精彩评论 ('+ res.count+')</em>';
+                comments.innerHTML = res.count;
+                /* 评论列表 */
+                var commentStr = "";
+                res.data.forEach(element => {
+                    var delStr = "";
+                    if(userID == element.userInfo.userID){
+                        delStr = '<span class="del"><button onclick="drop_comment(this)" id="'
+                            +element.id+'">删除</button></span>';
+                    }
+                    commentStr += '<li id="'+element.id+'"><div class="userInfo"><p class="oImg"><img src="'
+                        +element.userInfo.head_img
+                        +'"></p><dl><dt class="name">'
+                        +element.userInfo.nick_name
+                        +'</dt><dt class="time_num"><em class="t">'
+                        +element.timer+' </em><em><span> '+element.floor+'楼</span></em></dt></dl></div><p>'
+                        +element.content+'</p>'+delStr+'</li>';
+                });
+                user_comment.innerHTML = commentStr;
+
+                /* 分页器 */
+                var pageStr = "";
+                var i = 0;
+                while(i<res.pages){
+                    i++ ;
+                    if(i == currentPage){
+                        pageStr += '<li index="'+i+'" class="sel">'+i+'</li>';
+                    }else{
+                        pageStr += '<li index="'+i+'">'+i+'</li>';
+                    }
+                }
+                comment_pages.innerHTML = pageStr;
+                
+            }else{
+                user_comment.innerHTML = res.message;
+                commentCoumnt.innerHTML = '<em>精彩评论 (0)</em>';
+                comments.innerHTML = 0;
+            }
+           
+        }
+    });
+}
+
+/* 写评论 */
+
+var commentBtn = document.getElementById("commentBtn");
+var cancelComment = document.getElementById("cancelComment");
+    commmentContent.addEventListener("focus",function(){
+        commentBtn.style.display = "block";
+    });
+    cancelComment.addEventListener("click",function(){
+        commentBtn.style.display = "none";
+    });
+    input_comment = function(obj){
+        obj.setAttribute("disabled","disabled");
+        $.ajax({
+            url:'/router/inputCommment/',
+            data:{
+                articleID:articleID,
+                userID:userID,
+                content:commmentContent.value
+            },
+            success:function(res){
+                obj.removeAttribute("disabled");
+                commentBtn.style.display = "none";
+                commmentContent.value = '';
+                if(res.code == 1){
+                    query_comment();
+                }else{
+                    alert(res.message);
+                }
+            }
+        });
+    }
+
+/* 删除文章 */
+drop_article = function(){
+    var rst = confirm("确定要删除吗?此操作不可逆，确定删除永久丢失数据！");
+        if(rst == true){
+            $.ajax({
+                url:'/router/drop_article/',
+                data:{
+                    articleID:articleID,
+                    userID:userID 
+                },
+                success:function(res){
+                    if(res.code == 1){
+                        var rmt =  confirm(res.message);
+                            if(rmt == true){
+                                window.location.href = '/view/user/user_info';
+                            }
+                    }else{
+                        alert(res.message);
+                    }
+                }
+            });
+        }
+}
+
+/* 删除评论 */
+drop_comment = function(obj){
+    var rst = confirm("确定要删除吗?此操作不可逆，确定删除永久丢失数据！");
+    var commentID = obj.getAttribute("id");
+        if(rst == true){
+            $.ajax({
+                url:'/router/drop_comment/',
+                data:{commentID:commentID},
+                success:function(res){
+                    console.log(res)
+                    if(res.code == 1){
+                        query_comment();
+                    }else{
+                        alert(res.message);
+                    }
+                }
+            });
+        }
+}
+</script>
+</body>
+</html>

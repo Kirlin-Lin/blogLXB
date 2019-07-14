@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="/public/images/favicon.ico" rel="shortcut icon">
+    <link rel="stylesheet" href="/public/css/choulouderen.css">
+    <link rel="stylesheet" href="/public/css/cropper.css">
+    <title>个人中心</title>
+</head>
+<body>
+<span id="header"></span>
+<section class="uesr_modify">
+        <div class="head_m">
+            <div class="oImg"><img id="user_head"></div>
+            <button>修改<input id="file" type="file"></button>
+        </div>
+        <div class="grjs">
+             <p class="name">个人简介</p>
+            <pre id="jj_ct" class="jj_ct mo_grjs"  contenteditable="true"></pre>
+        </div>
+        <pre></pre>
+        <ul class="list">
+            <li>
+                 <p class="name">昵称</p>
+                <input type="text"  id="nick_name">
+            </li>
+            <li onclick="get_sex()">
+                <label>
+                    <input id="sex_nan" type="radio" name="sex" val="男">
+                    <b>男</b>
+                </label>
+                <label>
+                    <input id="sex_nv" type="radio" name="sex" val="女">
+                    <b>女</b>
+                </label>
+            </li>
+        </ul>
+        <div class="btn"><button onclick="update_userInfo()">保存</button></div>
+</section>
+<!-- 裁剪图片弹窗 -->
+<span id="cropper_box" class="none">
+    <div class="shade2"></div>
+    <div class="cropper_box" >
+        <div class="cj_btns">
+            <button type="button" id="clip" class="clip">裁剪</button>
+            <button class="clip_server" onclick="update_head()">保存</button>
+        </div>
+        <div class="imgs_show">
+            <div class="head_clip">
+                <img id="image">
+            </div>
+            <div id="result" class="result"></div>
+        </div>
+    </div>
+</span>
+<script src="/public/js/common.js"></script>
+<script src="/public/js/cropper.js"></script>
+<script> 
+
+window.onload = function(){
+    
+    /* 获取头部和底部 */
+    get_head_foot()
+
+
+     /* 个人信息查询 */
+    var sex_nan = document.getElementById("sex_nan");
+    var sex_nv = document.getElementById("sex_nv");
+    var nick_name = document.getElementById("nick_name");
+    var jj_ct = document.getElementById("jj_ct");
+    var sex;
+     $.ajax({
+        url:'/router/userInfo/',
+        data:{},
+        success:function(res){
+            var user_head = document.getElementById("user_head");
+            if(res.code == 1){
+                user_head.src = res.data.head_img;
+                jj_ct.innerHTML = res.data.introduce;
+                nick_name.value = res.data.nick_name
+                if(res.data.sex == "男"){
+                    sex_nan.setAttribute("checked","checked");
+                }else if(res.data.sex == "女"){
+                    sex_nv.setAttribute("checked","checked");
+                }else{
+                    sex = res.data.sex;
+                }
+            }
+        }
+    });
+
+    /* 保存个人信息 */
+    get_sex = function(){
+        sex = event.target.getAttribute("val");
+    }
+    update_userInfo = function(){
+        let obj = {
+            sex:sex,
+            nick_name:nick_name.value,
+            introduce:jj_ct.innerHTML
+        }
+        $.ajax({
+            url:'/router/update_userInfo/',
+            data:obj,
+            success:function(res){
+                alert(res.message);
+            }
+        });
+    }
+}
+
+/* 上传图片到服务器 */
+update_head = function(){
+    var clip_base = document.getElementById("clip_base");
+    var base64 = "";
+        if(clip_base){
+
+            $.ajax({
+                url:'/router/update_head/',
+                data:{src:clip_base.getAttribute("src").replace(/:/g,"@@@").replace(/\+/g,"---").replace(/=/g,"!!!")},
+                success:function(res){
+                    if(res.code == 4){
+                        window.location.reload();
+                    }
+                }
+            })
+        }else{
+            alert("请先裁剪图片再保存");
+        }
+}
+/* 裁剪头像 */
+
+function getRoundedCanvas(sourceCanvas) {
+    var canvas = document.createElement('canvas');
+    var context = canvas.getContext('2d');
+    var width = sourceCanvas.width;
+    var height = sourceCanvas.height;
+
+    canvas.width = width;
+    canvas.height = height;
+    context.imageSmoothingEnabled = true;
+    context.drawImage(sourceCanvas, 0, 0, width, height);
+    context.globalCompositeOperation = 'destination-in';
+    context.beginPath();
+    // context.arc(width / 2, height / 2, Math.min(width, height) / 2, 0, 2 * Math.PI, true);
+    context.fill();
+    return canvas;
+}
+/* 显示裁剪 */
+load_cropper = function(image,clip,result){
+    var croppable = false;
+    var cropper = new Cropper(image, {
+        aspectRatio:1,
+        viewMode: 1,
+        ready: function () {
+        croppable = true;
+        }
+    });
+
+    clip.onclick = function () {
+        var croppedCanvas;
+        var roundedCanvas;
+        var roundedImage;
+
+        if (!croppable) {
+        return;
+        }
+
+        /* Crop */
+        croppedCanvas = cropper.getCroppedCanvas({width:100,height:100});
+
+        /* Round */
+        roundedCanvas = getRoundedCanvas(croppedCanvas);
+
+        /* Show */
+        roundedImage = document.createElement('img');
+        roundedImage.setAttribute("crossOrigin",'Anonymous');
+        roundedImage.setAttribute("id",'clip_base');
+        roundedImage.src = roundedCanvas.toDataURL("image/jpeg",1);
+        result.innerHTML = '';
+        result.appendChild(roundedImage);
+    };
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+    var cropper_box = document.getElementById('cropper_box');
+    var file = document.getElementById('file');
+    var image = document.getElementById('image');
+    var clip = document.getElementById('clip');
+    var result = document.getElementById('result');
+
+    var imgURL = "";
+        file.onchange = function(){
+            cropper_box.style.display = 'block';
+                imgURL = window.webkitURL.createObjectURL(this.files[0]);
+                image.setAttribute("src",imgURL);
+                load_cropper(image,clip,result);
+        }
+});
+</script>
+</body>
+</html>
