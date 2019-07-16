@@ -5,4 +5,4 @@
 本地安装需要
 mongodb  node  nginx
 
-项目演示地址：[193.112.102.203](https://193.112.102.203/)
+项目演示地址：[https://www.blogls.com/](https://www.blogls.com/)
