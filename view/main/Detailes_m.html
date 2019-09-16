@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" style="background: #eaeaea;">
+<head>
+	<meta charset="UTF-8">
+	<title id="title">文章详情</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/public/css/Common.css">
+	<link rel="stylesheet" href="/public/css/Blogls.m.css">
+	<link rel="stylesheet" href="/public/font/iconfont.css">
+	<link rel="stylesheet" href="/public/css/highlight.pack.styles/atom-one-dark-reasonable.css">
+	<link href="/public/images/favicon.ico" rel="shortcut icon">
+	<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+	<script src="https://cdn.staticfile.org/axios/0.18.0/axios.min.js"></script>
+	<script>
+	/* 获取url参数 */
+	function getQueryVariable(variable){
+	    var query = window.location.search.substring(1);
+	    var vars = query.split("&");
+	    for (var i=0;i<vars.length;i++) {
+	            var pair = vars[i].split("=");
+	            if(pair[0] == variable){return pair[1];}
+	    }
+	    return(false);
+	}
+	var articleID = getQueryVariable("id");
+		console.log(articleID)
+	if(window.screen.width > 420){
+    	window.location.href = "/view/main/article_details?id="+articleID;
+	}</script>
+</head>
+<body style="padding-bottom: 0;">
+<span id="app">
+
+<header><button class="back" onclick="location.href='/view/main/Index_m'">返回</button>文章详情</header>
+<section class="detailes_m">
+	<h1 class="artice_tit">{{article.tit}}</h1>
+	<div class="userData">
+		<div class="oImg"><img :src="article.head_img"></div>
+		<dl>
+			<dt class="name">{{article.nick_name}}</dt>
+			<dt class="timerNum">
+				<span>时间:{{article.timer}}</span>
+				<span>浏览:{{article.num}}</span>
+				<span>评论:{{article.comments}}</span>
+			</dt>
+		</dl>
+	</div>
+	<!-- 内容 -->
+	<div class="content"  v-html="decodeURIComponent(article.content)"></div>
+	<!-- 评论 -->
+	<div class="comment">
+		<h3>评论({{commentCount}})</h3>
+		<ul class="list">
+			<!-- <li>
+				<div class="oImg"><img src="https://www.blogls.com/public/user.head.pic/user_head_5d2d4da582058621725223d7.jpg" alt=""></div>
+				<dl class="info">
+					<dt class="name">路小北 <span>5楼</span>  <span>2019-0-804</span> </dt>
+					<dt class="ct">sddf 射，即执行处理某种事件的动作，需要一段执行过程。比
+						<img src="https://www.blogls.com/public/emoji/emji_02.png" alt="">
+						<img src="https://www.blogls.com/public/emoji/emji_02.png" alt="">
+						<img src="https://www.blogls.com/public/emoji/emji_02.png" alt="">
+						<img src="https://www.blogls.com/public/emoji/emji_02.png" alt="">
+					</dt>
+					<dl class="reply">
+						<dt>路小北@小可爱说：啊哈哈，你想笑死谁</dt>
+						<dt>路小北@小可爱说：啊哈哈，你想笑死谁</dt>
+						<dt>路小北@小可爱说：啊哈哈，你想笑死谁</dt>
+					</dl>
+				</dl>
+			</li> -->
+			<li v-for="obj in commentArr">
+				<div class="oImg"><img :src="obj.userInfo.head_img"></div>
+				<dl class="info">
+					<dt class="name">{{obj.userInfo.nick_name}}<span> {{obj.floor}} 楼</span>  <span> {{obj.timer}} </span> </dt>
+					<dt class="ct" v-html="decodeURIComponent(obj.content)"></dt>
+					<dl class="reply" v-if="obj.replyComent.length > 0">
+						<dt v-for="replyObj in obj.replyComent"><span>{{replyObj.armourUserID.nick_name}}
+						</span>@ <span>{{replyObj.partyUserID.nick_name}}
+						</span>：{{replyObj.content}}</dt>
+					</dl>
+				</dl>
+			</li>
+		</ul>
+	</div>
+</section>
+
+<div class="no_more" v-if="commentArr.length  == 0"><em>没有评论</em></div>
+
+<div class="no_more" v-if="commentArr.length > 0 && commentArr.length < 10 "><em>没有更多评论了</em></div>
+
+</span>	
+
+<script>
+/* 获取url参数 */
+function getQueryVariable(variable){
+    var query = window.location.search.substring(1);
+    var vars = query.split("&");
+    for (var i=0;i<vars.length;i++) {
+            var pair = vars[i].split("=");
+            if(pair[0] == variable){return pair[1];}
+    }
+    return(false);
+}
+var app = new Vue({
+	el:"#app",
+	data:{
+		commentArr:[],//评论列表
+		article:{},//文章详情
+		articleID:null,//文章ID
+		currentPage:1,
+		no_more:false,
+		commentCount:0//当前评论页面
+	},
+	methods:{
+		/* 获取评论 */
+		getComment:function(articleID,currentPage){
+			axios.post("/router/ouputCommment/",{
+				articleID:articleID,
+            	currentPage:currentPage
+			}).then(res => {
+				console.log(res)
+				if(res.data.code == 1){
+					this.commentCount = res.data.count;
+					res.data.data.forEach(element => {
+						this.commentArr.push(element);
+					});
+				}else{
+					this.no_more = true;
+				}
+			}).catch(function(err){
+				console.log(err);
+			});
+		}
+	},
+	mounted(){
+		/* var that = this;
+		window.onscroll = function(){
+   		//变量scrollTop是滚动条滚动时，距离顶部的距离
+   		var scrollTop = document.documentElement.scrollTop||document.body.scrollTop;
+   		//变量windowHeight是可视区的高度
+   		var windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
+   		//变量scrollHeight是滚动条的总高度
+   		var scrollHeight = document.documentElement.scrollHeight||document.body.scrollHeight;
+               //滚动条到底部的条件
+            if(scrollTop+windowHeight==scrollHeight){
+				that.currentPage += 1;
+				console.log(that.currentPage)
+				that.getComment(that.articleID,that.currentPage);
+	         	console.log("距顶部"+scrollTop+"可视区高度"+windowHeight+"滚动条总高度"+scrollHeight);
+             }   
+        } */
+	},
+	created(){
+		/* 获取文章详情 */
+		var title = document.getElementById("title");
+		axios.post("/m_business/detailes_m/",{
+			id:getQueryVariable("id")
+		}).then(res => {
+			if(res.data.code == 1){
+				title.innerHTML = res.data.articleDetails.tit;
+				this.article = res.data.articleDetails
+			}else{
+			}
+		}).catch(function(err){
+			console.log(err);
+		});
+
+		/* 获取评论列表 */
+		var articleID =  getQueryVariable("id");
+			this.articleID = articleID;
+			this.getComment(articleID,this.currentPage);
+
+	}
+});
+</script>
+</body>
+</html>

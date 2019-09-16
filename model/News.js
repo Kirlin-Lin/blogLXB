@@ -6,7 +6,11 @@ let newsSchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:"Article"
     },
-    commentUserID:{ //文章作者ID
+    otherID:{ //文章作者ID
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Users"
+    },
+    commentUserID:{ //评论用户ID
         type:mongoose.Schema.Types.ObjectId,
         ref:"Users"
     },
@@ -17,6 +21,10 @@ let newsSchema = new mongoose.Schema({
     read:{
         type:Boolean,
         default:false
+    },
+    timer:{
+        type:Date,
+        default:Date.now
     }
 }, {versionKey: false});
 

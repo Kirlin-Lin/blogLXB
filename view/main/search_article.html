@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="/public/images/favicon.ico" rel="shortcut icon">
+    <link rel="stylesheet" href="/public/css/choulouderen.css">
+    <title>搜索查询</title>
+</head>
+<body>
+<span id="header"></span>
+<section class="searchBox">
+    <ul class="l no_style">
+        <li class="sel"> <span class="iconfont">&#xe661;</span> 文章</li>
+       <!--  <li> <span class="iconfont">&#xe66f;</span> 用户</li> -->
+    </ul>
+    <div class="r">
+        <div class="dataInfos">
+            <em>搜索到 <span id="searchCount">0</span> 条数据</em> 
+           <!--  <div class="btns" onclick="weikaifa()">
+                <button>最新</button>
+                <button>以往</button>
+                <button>随机</button>
+            </div> -->
+        </div>
+        <ul class="list no_style" id="searchList">
+           <!--  <li>
+                <div class="user">
+                    <div class="oImg"><img src="https://www.blogls.com/public/images/user_head_5d0d285a422a74116ab5b674.jpg?versions=7/11/2019,%209:15:25%20PM" alt=""></div>
+                    <div class="name">路小北</div>
+                    <div class="timer">2019-08-11</div>
+                </div>
+                <div class="ct">
+                    <h3><a href=""><em>你好</em>，我是小冬瓜</a></h3>
+                    <div class="ptx">这是一个简介，真的只是一条简介，请不要随意的更换简介好吗？</div>
+                </div>
+                <div class="datas"><em class="iconfont">&#xe608; 188</em>  <em class="iconfont">&#xe610; 250</em></div>
+            </li> -->
+        </ul>
+       <!--  <div class="dataInfos" style="margin-top: 15px;">
+            <em>共有 28 调数据</em> 
+        </div> -->
+        <div id="getMore" class="getMore"><button>获取更多</button></div>
+    </div>
+</section>
+
+<script src="/public/js/common.js"></script>    
+<script>
+window.onload = function(){
+    /* 显示头部和脚 */
+    get_head_foot();
+
+    var searchCount = document.getElementById("searchCount");
+    var searchList = document.getElementById("searchList");
+    var getMore = document.getElementById("getMore");
+    /*搜索查询*/
+    var searchOBJ = {};
+    query_article_fun = function(searchValue){
+
+        searchOBJ.page = 1;
+        searchOBJ.searchValue = searchValue;
+        /*查询更多*/
+        getMore.onclick = function(){
+            searchOBJ.page += 1;
+            query_article_fun(searchValue);
+        }
+
+        var secrchStr = "";
+        $.ajax({
+            url:"/router/query_artice",
+            data:searchOBJ,
+            success:function(res){
+                searchCount.innerHTML = res.count;
+                if(res.code == 2){
+                    if(res.count > 10){
+                        getMore.style.display = "blick";
+                    }
+                    var regTit = new RegExp(searchValue,"gi");
+                    res.data.forEach(element => {
+                        var ptx = decodeURIComponent(element.ptx);
+                        secrchStr +='<li><div class="user"><div class="oImg"><img src="'+element.head_img+'"></div>'
+                                  + '<div class="name">'+element.nick_name+'</div><div class="timer">'+element.timer+'</div>'
+                                  + '</div><div class="ct"><h3><a target="_blank" href="/view/main/article_details?id='+element.id+'">'+element.tit.replace(regTit,'<em>'+searchValue+'</em>')+'</a></h3>'
+                                  + '<div class="ptx">'+ptx+'</div></div><div class="datas"><em class="iconfont">&#xe608; '+element.num+'</em> '
+                                  + ' <em class="iconfont">&#xe610; '+element.comment+'</em></div></li>';  
+                    });
+                   searchList.innerHTML =  secrchStr;
+                }else{
+                    searchList.innerHTML =  res.message;
+                }
+            }
+         });
+    }
+    var getSearchValue = decodeURI(getQueryVariable("searchValue"));
+        query_article_fun(getSearchValue);
+}
+</script>
+</body>
+</html>

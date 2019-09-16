@@ -1,33 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+    <script>
+        if (window.screen.width < 420) {
+            window.location.href = "/view/main/Index_m";
+        }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="max-age=7200">
+    <meta name="Description" content="路小北,个人博客学习分享,前端开发分享,web前端,node,javascript,css,vue,linux,html5,负载均衡,mongodb,json,css3,git,svn,全栈,IDE,编程">
+    <meta name="Keywords" content="路小北博客,路小北,个人博客学习分享,前端开发分享博客,路小北前端,web前端博客,node学习教程,javascript学习分享教程,css,css3,vue,linux,html,html5,负载均衡,mongodb,json,git,svn,全栈学习分享,IDE,编程,前端教程" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link href="/public/images/favicon.ico" rel="shortcut icon">
     <link rel="stylesheet" href="/public/css/choulouderen.css">
     <link rel="stylesheet" href="/public/css/swiper.min.css">
-    <title>首页</title>
+    <link rel="stylesheet" href="/public/css/animate.css">
+    <title>路小北</title>
 </head>
+
 <body>
-<span id="header"></span>
-<section class="main">
-    <!-- banner -->
-    <div class="banner">
-        <div class="swiper-container sipwer_01">
-            <div class="swiper-wrapper">
-                <div class="swiper-slide"><img src="/public/images/banner_01.jpg" alt="banner"></div>
-                <div class="swiper-slide"><img src="/public/images/banner_02.jpg" alt="banner"></div>
-                <div class="swiper-slide"><img src="/public/images/banner_03.jpg" alt="banner"></div>
+    <span id="header"></span>
+    <section class="main">
+        <!-- banner -->
+        <div class="banner">
+            <div class="swiper-container sipwer_01">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+                        <img src="/public/images/banner_07.jpg" alt="banner">
+                    </div>
+                    <div class="swiper-slide">
+                        <a href="https://www.blogls.com/view/main/article_details?id=5d4a30316204cd2473c48107">
+                            <img src="/public/images/banner_06.jpg" alt="banner">
+                        </a>
+                    </div>
+                    <div class="swiper-slide">
+                        <a href="https://www.blogls.com/view/main/article_details?id=5d306ec6c47b20555514d042">
+                            <img src="/public/images/banner_04.jpg" alt="banner">
+                        </a>
+                    </div>
+                    <!--   <div class="swiper-slide"><img src="/public/images/banner_03.jpg" alt="banner"></div> -->
+                </div>
+                <div class="swiper-pagination"></div>
             </div>
-            <div class="swiper-pagination"></div>
         </div>
-    </div>
-    <!-- content -->
-    <dl class="content_box">
-        <dt class="l">
-            <ul class="article" id="article"></ul>
-            <!-- <div class="pages_search">
+        <!-- content -->
+        <dl class="content_box">
+            <dt class="l">
+                <ul class="article no_style" id="article"></ul>
+                <!-- <div class="pages_search">
                 <span class="up_down">
                     <button onclick="up_down_page('up')">上一页</button>
                     <button onclick="up_down_page('down')">下一页</button>
@@ -40,17 +62,66 @@
                     <button onclick="more_page()">跳转</button>
                 </div>
             </div> -->
-            <div class="pages_search">
-                 <div class="fenyeqi" id="pages"></div>
-             </div>
-             <div class="getMore" onclick="query_article_fun()"><button>获取更多</button></div>
+                <div class="pages_search">
+                    <div class="fenyeqi" id="pages"></div>
+                </div>
+                <div id="getMore" class="getMore" onclick="query_article_fun()"><button>获取更多</button></div>
+            </dt>
+            <dt class="r">
+                <!-- <h3>前端和全栈交流群</h3>
+            <p>QQ群:457966876 <br> 微信群:</p> -->
+                <h3>热门标签</h3>
+                <ul class="category no_style" id="category" onclick="query_cate()"></ul>
+                <br>
+                <h3>推荐作者</h3>
+                <div class="recommendUser" id="recommendUser">
+                    <!--       recommendUser
+                <a href="">
+                    <p class="oImg"><img src="/public/images/user_head_5d21c18752b93543a08583f6.jpg?versions=2019-7-21" alt=""></p>
+                    <dl class="info">
+                        <dt class="name">路小北</dt>
+            <dt class="data">写了 <em>3</em> 篇博文</dt>
+        </dl>
+        </a>
+        <a href="">
+            <p class="oImg"><img src="/public/images/user_head_5d21c18752b93543a08583f6.jpg?versions=2019-7-21" alt=""></p>
+            <dl class="info">
+                <dt class="name">路小北</dt>
+                <dt class="data">写了 <em>3</em> 篇博文</dt>
+            </dl>
+        </a> -->
+        </div>
+        <br>
+        <h3>推荐学习资料</h3>
+        <ul class="tjxuezil no_style">
+            <li>晴雯博客：<a target="_blank" href="http://123.207.56.91:90/">123.207.56.91:90/</a></li>
+            <li>阿喜博客：<a target="_blank" href="https://www.sjx1.com/">www.sjx1.com/</a></li>
+            <li>vue官方教程：<a target="_blank" href="https://cn.vuejs.org/v2/guide/events.html">cn.vuejs.org/v2/guide/events.html</a></li>
+            <li>阮一峰ES6新手教程：<a target="_blank" href="http://es6.ruanyifeng.com/">es6.ruanyifeng.com/</a></li>
+            <li>菜鸟笔记：<a target="_blank" href="https://www.runoob.com/">www.runoob.com/</a></li>
+            <li>hammerjs：<a target="_blank" href="http://hammerjs.github.io/">hammerjs.github.io/</a></li>
+            <li>SVG animation：<a target="_blank" href="https://www.w3cplus.com/blog/tags/585.html">www.w3cplus.com/blog/tags/585.html</a></li>
+            <li>svg.pan-zoom.js演示：<a target="_blank" href="http://jillix.github.io/svg.pan-zoom.js/">jillix.github.io/svg.pan-zoom.js/</a></li>
+            <li>svg-pan-zoom.js.github.library <a target="_blank" href="https://github.com/ariutta/svg-pan-zoom#svg-pan-zoom-library">github.com/ariutta/svg-pan-zoom#svg-pan-zoom-library</a></li>
+            <li>前端裁剪图片插件cropper：<a target="_blank" href="http://fengyuanchen.github.io/cropperjs/">fengyuanchen.github.io/cropperjs/</a></li>
+            <li>ztree官网：<a target="_blank" href="http://www.treejs.cn/v3/main.php#_zTreeInfo">www.treejs.cn/v3/main.php#_zTreeInfo</a></li>
+            <li>前端交流群:
+                <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=c688fb13dcc62e8f28ab486ba978fe305a727a3d80a5886c11c390f45ec6e146"><img style="vertical-align: -5px;display: inline-block;width: 21px;height: 21px;" border="0" src="https://pub.idqqimg.com/wpa/images/counseling_style_51.png" alt="前端开发网页设计交流" title="前端开发网页设计交流">457966876</a>
+            </li>
+        </ul>
+        <!-- <p class="index_right_pic">
+                <img src="/public/images/show_index_right.jpg" alt="">
+            </p> -->
+        <br>
+        <h3>本站说明</h3>
+        <ul class="shuoming no_style">
+            <li><span class="iconfont">&#xe600; </span> <span>本站若有资源侵权，违法，请联系版主进行删除</span></li>
+            <li><span class="iconfont">&#xe908; </span> <span><a href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=523705068@qq.com">523705068@qq.com </a></span></li>
+            <li><span class="iconfont">&#xe748;</span> <a target="_blank" href="/view/main/rule">《社区管理规则》</a></li>
+        </ul>
         </dt>
-        <dt class="r">
-            <h3>热门标签</h3>
-            <ul class="category" id="category" onclick="query_cate()"></ul>
-        </dt>
-    </dl>
-</section>
+        </dl>
+    </section>
     <!-- <div class="header">
         <div class="info">
             <div class="logo"><a href="/"><img src="/public/images/logo.png" alt=""></a></div>
@@ -65,16 +136,16 @@
         </div>
     </div>
     <div class="footer">路小北   粤ICP备16068758号-2</div> -->
-  
+
 
     <!-- 导航 -->
-  <!--   <div class="category" id="category" onclick="query_cate()"></div> -->
-<div class="footer_box">
-    <span id="footer"></span> 
-    <script src="/public/js/cnzz.js"></script>
-</div>
-  
-<!-- <span class="none">
+    <!--   <div class="category" id="category" onclick="query_cate()"></div> -->
+    <div class="footer_box">
+        <span id="footer"></span>
+        <script src="/public/js/cnzz.js"></script>
+    </div>
+
+    <!-- <span class="none">
 <div class="shade"></div>
     <div class="message_pop">
       <h3>信息提示标题</h3>
@@ -85,111 +156,148 @@
         </div>
     </div>
 </span> -->
-<script src="/public/js/common.js"></script>
-<script src="/public/js/swiper.min.js"></script>
-<script>
-window.onload = function(){
-    /* swiper */
-    var swiper = new Swiper('.sipwer_01', {
-        pagination: {
-            el: '.swiper-pagination',
-            dynamicBullets: true,
-        },
-        loop : true,
-        speed:1000,
-        autoplay : {
-            delay:3000
-        },
-    });
-    /* 获取头部和底部 */
-    get_head_foot();
-
-    /* 查询标签列表 */
-    $.ajax({
-        url:"/router/cetegory",
-        data:{type:"index"},
-        success:function(res){
-            var category = document.getElementById("category");
-            if(res.code == 0){
-                category.innerHTML = "暂无分类";
-            }else if(res.code == 1){
-               
-                var str = '<li class="sel" index="0" id="">全部</li>';
-                res.data.forEach((element,index) => {
-                    str += '<li count="'+element.count+'" index="'+(index+1)+'" id="'+element.id+'">'+element.category_name +'</li>';
-                });
-                category.innerHTML = str;
-            }
-        }
-    });
-
-    
+    <script src="/public/js/common.js"></script>
+    <script src="/public/js/swiper.min.js"></script>
+    <script>
+        window.onload = function() {
 
 
-    /* 文章查询 */
-    var queryA = {
-        page:0,
-    };
-    var article = document.getElementById("article");
-    var pages = document.getElementById("pages");
-    query_article_fun = function(){
-        queryA.page += 1;
-        $.ajax({
-            url:"/router/query_artice",
-            data:queryA,
-            success:function(res){
-                if(res.code == 2){
-                    pages.innerHTML = '共 '+res.count+' 条数据';
-                    var Str = "";
-                    res.data.forEach(element => {
-                        if(element.showImg == "no"){
-                            Str += '<li><h3><a href="/view/main/article_details?id='+element.id+'">'+element.tit+'</a></h3>'
-                                +'<div class="ptx">'+element.ptx+'</div>'
-                                +'<div class="datas"><p class="fl"><span>'+element.category+'</span></p>'
-                                +'<p class="name">'+element.nick_name+'</p><p class="n">'
-                                +'<span class="iconfont">&#xe608; </span><span> '+element.num
-                                +'</span><span class="iconfont"> &#xe7cc; </span><span> '+element.comment+'</span></p>'
-                                +'</div></li>';
-                        }else{
-                            Str += '<li class="hove-img"><h3><a href="/view/main/article_details?id='+element.id+'">'+element.tit+'</a></h3>'
-                                +'<div class="ptx">'+element.ptx+'</div>'
-                                +'<div class="datas"><p class="fl"><span>'+element.category+'</span></p>'
-                                +'<p class="name">'+element.nick_name+'</p><p class="n">'
-                                +'<span class="iconfont">&#xe608; </span><span> '+element.num
-                                +'</span><span class="iconfont"> &#xe7cc; </span><span> '+element.comment+'</span></p>'
-                                +'</div><div class="oImg" style="background: '
-                                +'url('+element.showImg+') center center no-repeat;background-size: cover;"></div></li>';
+
+            /* swiper */
+            var swiper = new Swiper('.sipwer_01', {
+                pagination: {
+                    el: '.swiper-pagination',
+                    dynamicBullets: true,
+                },
+                loop: true,
+                speed: 1000,
+                autoplay: {
+                    delay: 3000
+                },
+            });
+            /* 获取头部和底部 */
+            get_head_foot();
+
+            /* 查询标签列表 */
+            $.ajax({
+                url: "/router/cetegory",
+                data: {
+                    type: "index"
+                },
+                success: function(res) {
+                    var category = document.getElementById("category");
+                    if (res.code == 0) {
+                        category.innerHTML = "暂无分类";
+                    } else if (res.code == 1) {
+
+                        var str = '<li class="sel" index="0" id="">全部</li>';
+                        res.data.forEach((element, index) => {
+                            str += '<li count="' + element.count + '" index="' + (index + 1) + '" id="' + element.id + '">' + element.category_name + '</li>';
+                        });
+                        category.innerHTML = str;
+                    }
+                }
+            });
+
+
+
+
+            /* 文章查询 */
+            var queryA = {
+                page: 0,
+            };
+            var article = document.getElementById("article");
+            var pages = document.getElementById("pages");
+            var getMore = document.getElementById("getMore");
+            query_article_fun = function() {
+                queryA.page += 1;
+                $.ajax({
+                    url: "/router/query_artice",
+                    data: queryA,
+                    success: function(res) {
+                        if (res.code == 2) {
+                            if (res.count > 10) {
+                                getMore.style.display = "block";
+                            } else {
+                                getMore.style.display = "none";
+                            }
+                            pages.innerHTML = '共 ' + res.count + ' 篇文章';
+                            var Str = "";
+                            res.data.forEach(element => {
+                                let ptx = decodeURIComponent(element.ptx).replace(/&nbsp;/g, "");
+                                if (element.showImg == "no") {
+                                    Str += '<li class="rubberBand"><h3><a target="_blank" href="/view/main/article_details?id=' + element.id + '">' + element.tit + '</a></h3>' +
+                                        '<xmp class="ptx">' + ptx + '</xmp>' +
+                                        '<div class="datas"><p class="fl"><span>' + element.category + '</span></p>' +
+                                        '<p class="name">' + element.nick_name + '</p><p class="n">' +
+                                        '<span class="iconfont">&#xe608; </span><span> ' + element.num +
+                                        '</span><span class="iconfont"> &#xe7cc; </span><span> ' + element.comment + '</span></p>' +
+                                        '</div></li>';
+                                } else {
+                                    Str += '<li class="rubberBand hove-img"><h3><a target="_blank" href="/view/main/article_details?id=' + element.id + '">' + element.tit + '</a></h3>' +
+                                        '<xmp class="ptx">' + ptx + '</xmp>' +
+                                        '<div class="datas"><p class="fl"><span>' + element.category + '</span></p>' +
+                                        '<p class="name">' + element.nick_name + '</p><p class="n">' +
+                                        '<span class="iconfont">&#xe608; </span><span> ' + element.num +
+                                        '</span><span class="iconfont"> &#xe7cc; </span><span> ' + element.comment + '</span></p>' +
+                                        '</div><div class="oImg" style="background: ' +
+                                        'url(' + element.showImg + ') center center no-repeat;background-size: cover;"></div></li>';
+                                }
+                            });
+                            article.innerHTML = article.innerHTML + Str;
+                        } else if (res.code == 3) {
+                            alert(res.message);
                         }
-                    });
-                    article.innerHTML = article.innerHTML + Str;
-                }else if(res.code == 3){
-                    alert(res.message);
+                    }
+                });
+            }
+            query_article_fun();
+
+
+            /* 分类文章查询 */
+            query_cate = function() {
+                if (event.target.tagName == "LI") {
+                    if (queryA.page !== 0) {
+                        queryA.page = 0;
+                    }
+                    queryA.cateID = event.target.getAttribute("id");
+                    article.innerHTML = "";
+                    query_article_fun();
+                    var index = event.target.getAttribute("index");
+                    var cates = event.currentTarget.children;
+                    for (var element of cates) {
+                        element.className = "";
+                    }
+                    cates[index].className = "sel";
                 }
             }
-        });
-    }
-    query_article_fun();
 
-
-    /* 分类文章查询 */
-    query_cate = function(){
-        if(event.target.tagName == "LI"){
-            if(queryA.page !== 0){
-                queryA.page = 0;
+            /* 查询推荐用户 */
+            var recommendUser = document.getElementById("recommendUser");
+            query_recommend = function() {
+                $.ajax({
+                    url: "/router/query_recommend",
+                    data: {
+                        recommend: "recommend"
+                    },
+                    success: function(res) {
+                        if (res.code == 1) {
+                            var recomendStr = "";
+                            res.data.forEach(element => {
+                                recomendStr += '<a href="/view/main/otherInfo?userID=' +
+                                    element.id + '"><p class="oImg"><img src="' + element.head_img + '"></p><dl class="info">' +
+                                    '<dt class="name">' + element.nick_name + '</dt><dt class="data">写了 <em>' +
+                                    element.count + '</em> 篇文章</dt></dl></a>';
+                            });
+                            recommendUser.innerHTML = recomendStr;
+                        }
+                    }
+                });
             }
-            queryA.cateID = event.target.getAttribute("id");
-            article.innerHTML = "";
-            query_article_fun();
-            var index = event.target.getAttribute("index");
-            var cates = event.currentTarget.children;
-                for(var element of cates){
-                    element.className = "";
-                } 
-                cates[index].className = "sel";
+            query_recommend();
         }
-    }
-}
-</script>
+    </script>
 
 </body>
+
 </html>

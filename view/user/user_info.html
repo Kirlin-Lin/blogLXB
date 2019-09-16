@@ -15,7 +15,7 @@
     <div class="l">
         <div class="fls">
             <p><span class="iconfont">&#xe667; </span> 分类</p>
-            <ul class="category" id="category" onclick="query_cate()"></ul>
+            <ul class="category no_style" id="category" onclick="query_cate()"></ul>
         </div>
        <!--  <div class="fls">
             <p><span class="iconfont">&#xe667; </span> 我的发布</p>
@@ -35,7 +35,7 @@
             </li>
         </ul> -->
         <!-- 文章列表 -->
-        <ul class="article" id="article">
+        <ul class="article no_style" id="article">
 
         </ul>
 
@@ -52,7 +52,7 @@
                 <button onclick="more_page()">跳转</button>
             </div> -->
         </div>
-        <div class="getMore" onclick="query_article_fun()"><button>获取更多</button></div>
+        <div id="getMore" class="getMore" onclick="query_article_fun()"><button>获取更多</button></div>
     </div>
     <div class="r">
         <div class="user_data">
@@ -65,8 +65,8 @@
                 <p class="name">个人简介</p>
                 <pre class="jj_ct" id="pre"></div>
             <div class="inof">
-                <p class="name">个人简介</p>
-                <ul class="list" id="userInfo">
+                <p class="name">基本信息</p>
+                <ul class="list no_style" id="userInfo">
                    <!--  <li>昵称：<span>唐丽丽</span></li>
                     <li>邮件：<span>523705068@qq.com</span></li>
                     <li>性别：<span>女</span></li> -->
@@ -101,7 +101,9 @@ window.onload = function(){
                                     + res.data.username
                                     +'</span></li><li>性别：<span>'
                                     + res.data.sex
-                                    +'</span></li>';
+                                    +'</span></li><li>注册时间：<span>'
+                                    + res.data.registerTimer
+                                    +'</span></li>'
                
             }
         }
@@ -148,6 +150,7 @@ window.onload = function(){
     };
     var article = document.getElementById("article");
     var pages = document.getElementById("pages");
+    var getMore = document.getElementById("getMore");
     query_article_fun = function(){
         queryA.page += 1;
         $.ajax({
@@ -159,21 +162,27 @@ window.onload = function(){
                 if(res.code == 1){
                     article.innerHTML = res.message;
                 }else if(res.code == 2){
+                    if(res.data.length < 10){
+                        getMore.style.display = "none";
+                    }else if(res.count > 10){
+                        getMore.style.display = "block";
+                    }
                     var Str = "";
                     res.data.forEach(element => {
+                        let ptx = decodeURIComponent(element.ptx);
                         if(element.showImg == "no"){
-                            Str += '<li><h3><a href="/view/main/article_details?id='+element.id
+                            Str += '<li><h3><a target="_blank" href="/view/main/article_details?id='+element.id
                                 +'">'+element.tit+'</a></h3>'
-                                +'<div class="ptx">'+element.ptx+'</div>'
+                                +'<xmp class="ptx">'+ptx+'</xmp>'
                                 +'<div class="datas"><p class="fl"><span>'+element.category+'</span></p>'
                                 +'<p class="name">'+element.nick_name+'</p><p class="n">'
                                 +'<span class="iconfont">&#xe608; </span><span> '+element.num
                                 +'</span><span class="iconfont"> &#xe7cc; </span><span> '+element.comment+'</span></p>'
                                 +'</div></li>';
                         }else{
-                            Str += '<li class="hove-img"><h3><a href="/view/main/article_details?id='+element.id
+                            Str += '<li class="hove-img"><h3><a target="_blank" href="/view/main/article_details?id='+element.id
                                 +'">'+element.tit+'</a></h3>'
-                                +'<div class="ptx">'+element.ptx+'</div>'
+                                +'<xmp class="ptx">'+ptx+'</xmp>'
                                 +'<div class="datas"><p class="fl"><span>'+element.category+'</span></p>'
                                 +'<p class="name">'+element.nick_name+'</p><p class="n">'
                                 +'<span class="iconfont">&#xe608; </span><span> '+element.num

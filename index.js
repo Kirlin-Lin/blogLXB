@@ -7,12 +7,18 @@ const api = require("./api/mian/api");
 const Cookise = require("cookies");
 const IO = require('socket.io');
 const Users = require("./model/Users");
+const m_business = require("./api/mian/m_business");
+/*二维码生成器*/
+/* const QRCode = require('qrcode')
 
-
+QRCode.toDataURL('https://www.baidu.com', function (err, url) {
+  console.log(url)
+}); */
 
 /* 服务函数 */
 service_fun = function(req,res){
     if(req.url !== "/favicon.ico"){
+       
         req.cookies = new Cookise(req,res);
         req.userInfo = req.cookies.get("userInfo");
         try{
@@ -25,13 +31,28 @@ service_fun = function(req,res){
                 api.POST[pathname](req,res);
             }else if(pathname.indexOf("/router/") !== -1){
                 router[pathname](req,res);
-            }else if("/kuauyu"){
+            }else if(pathname.indexOf("/m_business/") !== -1){
+                m_business[pathname](req,res);
+            }else  if("/dome/kuayu"){
                 res.setHeader('Access-Control-Allow-Origin','*');
                 res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild');
                 res.setHeader('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
-                res.write("nginx负载均衡成功");
-                res.write("nginx动态静态分离成功");
-                res.end("跨域成功");
+                // res.write("nginx负载均衡成功");
+                // res.write("nginx动态静态分离成功");
+                 // res.end("跨域成功");
+                let json = JSON.stringify([{
+                    "tit":"邓紫棋",
+                    "country":"中国",
+                    "bumal":"新的心跳",
+                    "year":1998
+                },
+                {
+                    "tit":"All I Ask",
+                    "country":"Adele",
+                    "bumal":"新的心跳",
+                    "year":2015
+                }]);
+                res.end(json);
             }
         }catch(err){
             console.log(err);
@@ -96,7 +117,7 @@ socketIO.on("connection",function(socket){
 });
 
 /* 添加监听 */
-mongoose.connect('mongodb://admin:123456@www.baidu.com/blog?authSource=admin',{ useNewUrlParser: true },function(error){
+mongoose.connect('这里填写你的数据库链接地址',{ useNewUrlParser: true },function(error){
         if(error){
             console.log(error);
         }else{

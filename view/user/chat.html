@@ -28,7 +28,7 @@
         <div class="content">
             <div class="tit"><em id="ql_tit"></em><span class="line_nu">在线人数: <span id="count"></span>  </span></div>
             <div class="ct" id="ct_content">
-                <ul class="list" id="msg_content">
+                <ul class="list no_style" id="msg_content">
                    <!--  <li class="Y">
                         <div class="ico"><img src="/public/room/web.jpg" alt=""></div>
                         <div class="info">
@@ -75,7 +75,7 @@
         <div class="putBox">
             <div class="face_show" id="face_show">
                 <div class="name"><span  id="face_name"></span> <button onclick="close_face()" class="iconfont">&#xe639;</button></div>
-                <ul class="face_list" id="face_content" onclick="send_msg('face')">
+                <ul class="face_list no_style" id="face_content" onclick="send_msg('face')">
                   <!--   <li><img src="/public/face/egg/00.gif" alt=""></li> -->
                 </ul>
             </div>
@@ -180,6 +180,7 @@ window.onload = function(){
         var sTR = '<em>'+decodeURI(rst.user.nick_name) + decodeURI(rst.msg) +'</em>';
             Oli.innerHTML =  sTR;
             msg_content.appendChild(Oli);
+            get_bom_lt();
     }); 
     socket.on("msg",function(msg,userInfo){
         if(hidePage == 1){

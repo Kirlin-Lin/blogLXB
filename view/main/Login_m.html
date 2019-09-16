@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>登录</title>
+	<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+	<link rel="stylesheet" href="/public/css/Common.css">
+	<link rel="stylesheet" href="/public/css/Blogls.m.css">
+	<link href="/public/images/favicon.ico" rel="shortcut icon">
+	<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+	<script src="https://cdn.staticfile.org/axios/0.18.0/axios.min.js"></script>
+	<style>html,body,.loginBox{height: 100%;overflow:hidden;padding: 0}</style>
+</head>
+<body>
+<section class="loginBox" id="app">
+	<div class="sign">
+		<div class="logo"><img src="https://www.blogls.com/public/images/logo_m.png" alt=""></div>
+		<ul class="list">
+			<li>
+				<p>账号</p>
+				<em>
+					<input type="text" placeholder="注册邮箱" v-model="username">
+				</em>
+			</li>
+			<li>
+				<p>密码</p>
+				<em>
+					<input type="password" placeholder="密码" v-model="passwd">
+				</em>
+			</li>
+		</ul>
+		<div class="btn"><button v-on:click="login">登录</button></div>
+		<div class="f">
+			<a v-on:click="alert('请用电脑登录https://www.blogls.com找回密码')">找回密码</a>
+			<a href="/view/main/Register_m">注册</a>
+		</div>
+		<div class="back_index"><a href="/">返回首页</a></div>
+	</div>
+	<div class="message" v-if="messageShow">{{message}}</div>
+</section>
+<script>
+var app = new Vue({
+	el:"#app",
+	data:{
+		username:"",
+		passwd:"",
+		messageShow:false,
+		message:""
+	},
+	methods:{
+		login: function (event) {
+			axios.post("/api/post/sign_in",{
+				username:this.username,
+				passwd:this.passwd
+			}).then(res => {
+				console.log(res)
+				if(res.data.code == 3){
+					this.messageShow = true;
+					this.message = "1秒钟后，将跳往首页";
+					setTimeout(() => {
+						window.location.href='/view/main/Index_m'
+					}, 1000);
+				}else{
+					this.messageShow = true;
+					this.message = res.data.message;
+					setTimeout(() => {
+						this.messageShow = false;
+					}, 2000);
+				}
+			}).catch(function(err){
+				console.log(err);
+			});
+		}
+	}
+});
+</script>
+</body>
+</html>

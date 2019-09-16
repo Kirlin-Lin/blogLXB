@@ -17,11 +17,12 @@
             <button>修改<input id="file" type="file"></button>
         </div>
         <div class="grjs">
-             <p class="name">个人简介</p>
+             <p class="name">个人简介 <button class="qingkongjj_ct" id="qingkongjj_ct">清空</button></p>
             <pre id="jj_ct" class="jj_ct mo_grjs"  contenteditable="true"></pre>
         </div>
-        <pre></pre>
-        <ul class="list">
+
+        
+        <ul class="list no_style">
             <li>
                  <p class="name">昵称</p>
                 <input type="text"  id="nick_name">
@@ -60,7 +61,7 @@
 <script> 
 
 window.onload = function(){
-    
+
     /* 获取头部和底部 */
     get_head_foot()
 
@@ -70,6 +71,12 @@ window.onload = function(){
     var sex_nv = document.getElementById("sex_nv");
     var nick_name = document.getElementById("nick_name");
     var jj_ct = document.getElementById("jj_ct");
+    var qingkongjj_ct = document.getElementById("qingkongjj_ct");
+
+    qingkongjj_ct.onclick = function(){
+        jj_ct.innerHTML = "";
+    }
+    
     var sex;
      $.ajax({
         url:'/router/userInfo/',
@@ -81,8 +88,10 @@ window.onload = function(){
                 jj_ct.innerHTML = res.data.introduce;
                 nick_name.value = res.data.nick_name
                 if(res.data.sex == "男"){
+                    sex = res.data.sex;
                     sex_nan.setAttribute("checked","checked");
                 }else if(res.data.sex == "女"){
+                    sex = res.data.sex;
                     sex_nv.setAttribute("checked","checked");
                 }else{
                     sex = res.data.sex;
@@ -125,13 +134,14 @@ update_head = function(){
                         window.location.reload();
                     }
                 }
-            })
+            });
         }else{
             alert("请先裁剪图片再保存");
         }
 }
-/* 裁剪头像 */
 
+
+/* 裁剪头像 */
 function getRoundedCanvas(sourceCanvas) {
     var canvas = document.createElement('canvas');
     var context = canvas.getContext('2d');
@@ -144,7 +154,8 @@ function getRoundedCanvas(sourceCanvas) {
     context.drawImage(sourceCanvas, 0, 0, width, height);
     context.globalCompositeOperation = 'destination-in';
     context.beginPath();
-    // context.arc(width / 2, height / 2, Math.min(width, height) / 2, 0, 2 * Math.PI, true);
+    context.rect(0, 0, width, height);
+  /*  context.arc(width / 2, height / 2, Math.min(width, height) / 2, 0, 2 * Math.PI, true);*/
     context.fill();
     return canvas;
 }
@@ -165,12 +176,12 @@ load_cropper = function(image,clip,result){
         var roundedImage;
 
         if (!croppable) {
-        return;
+            return;
         }
 
         /* Crop */
         croppedCanvas = cropper.getCroppedCanvas({width:100,height:100});
-
+        console.log(croppedCanvas)
         /* Round */
         roundedCanvas = getRoundedCanvas(croppedCanvas);
 
@@ -194,7 +205,11 @@ window.addEventListener('DOMContentLoaded', function () {
     var imgURL = "";
         file.onchange = function(){
             cropper_box.style.display = 'block';
-                imgURL = window.webkitURL.createObjectURL(this.files[0]);
+                if(window.navigator.userAgent.indexOf("Chrome") >= 1 || window.navigator.userAgent.indexOf("Safari") >= 1){
+                    imgURL = window.webkitURL.createObjectURL(this.files[0]);
+                }else{
+                    imgURL = window.URL.createObjectURL(this.files[0]);
+                }
                 image.setAttribute("src",imgURL);
                 load_cropper(image,clip,result);
         }

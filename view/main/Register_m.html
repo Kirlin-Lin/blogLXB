@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>注册</title>
+	<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+	<link rel="stylesheet" href="/public/css/Common.css">
+	<link rel="stylesheet" href="/public/css/Blogls.m.css">
+	<link href="/public/images/favicon.ico" rel="shortcut icon">
+	<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+	<script src="https://cdn.staticfile.org/axios/0.18.0/axios.min.js"></script>
+	<style>html,body,.loginBox{height: 100%;overflow:hidden;padding: 0}</style>
+</head>
+<body>
+<section class="loginBox" id="app">
+	<div class="sign">
+		<div class="logo"><img src="https://www.blogls.com/public/images/logo_m.png" alt=""></div>
+		<ul class="list">
+			<li>
+				<p>账号</p>
+				<em>
+					<input type="text" placeholder="注册邮箱" v-model="username">
+				</em>
+			</li>
+			<li>
+				<p>密码</p>
+				<em>
+					<input type="password" placeholder="密码" v-model="passwd">
+				</em>
+			</li>
+			<li>
+				<p>昵称</p>
+				<em>
+					<input type="text" placeholder="用于形象展示" v-model="nick_name">
+				</em>
+			</li>
+		</ul>
+		<div class="btn"><button v-on:click="register">注册</button></div>
+		<div class="f"><a></a><a href="/view/main/Login_m">登录</a></div>
+	</div>
+	<div class="message" v-if="messageShow">{{message}}</div>
+</section>
+<script>
+var app = new Vue({
+	el:"#app",
+	data:{
+		username:"",
+		passwd:"",
+		messageShow:false,
+		message:"",
+		nick_name:""
+	},
+	methods:{
+		register: function (event) {
+			axios.post("/api/post/sign_up",{
+				username:this.username,
+				passwd:this.passwd,
+				nick_name:this.nick_name
+			}).then(res => {
+				console.log(res)
+				if(res.data.code == 3){
+					
+				}else if(res.data.code == 5){
+					this.messageShow = true;
+					this.message = res.data.message;
+					setTimeout(() => {
+						this.messageShow = false;
+						window.location.href="mailto:" + this.username
+					}, 2000);
+				}else{
+					this.messageShow = true;
+					this.message = res.data.message;
+					setTimeout(() => {
+						this.messageShow = false;
+					}, 2000);
+				}
+			}).catch(function(err){
+				console.log(err);
+			});
+		}
+	}
+});
+</script>
+</body>
+</html>

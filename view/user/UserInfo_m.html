@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" style="background: #eaeaea;">
+<head>
+	<meta charset="UTF-8">
+	<title>个人中心</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/public/css/Common.css">
+	<link rel="stylesheet" href="/public/css/Blogls.m.css">
+	<link rel="stylesheet" href="/public/font/iconfont.css">
+	<link href="/public/images/favicon.ico" rel="shortcut icon">
+	<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+	<script src="https://cdn.staticfile.org/axios/0.18.0/axios.min.js"></script>
+</head>
+<body style="padding-top:0">
+<!-- 导航 -->
+<section id="app">
+	<div class="userHead">
+		<div class="oImg"><img :src="head_img" alt=""></div>
+		<dl class="info">
+			<div class="nick_name">{{nick_name}}</div>
+			<div class="username">{{username}}</div>
+		</dl>
+		<button v-on:click="location.href='/view/user/New_m'" class="news"> <span class="iconfont">&#xe61c;</span> <em v-if="newsNum > 0"> {{newsNum}} </em> </button>
+	</div>
+	<div class="userMe">
+		<div class="btns" v-on:click="alert('请登录https://www.blogls.com查看详细内容')">
+			<button>
+				<p class="iconfont">&#xe624;</p>
+				<p>我的博文</p>
+			</button>
+			<button>
+				<p class="iconfont">&#xe673;</p>
+				<p>写文章</p>
+			</button>
+		</div>
+		<div class="data_zy">
+			<h3>个人简介</h3>
+			<p v-html="introduce"></p>
+		</div>
+		<ul class="list">
+			<li>
+				<em>性别</em>
+				<em>{{sex}}</em>
+			</li>
+			<li>
+				<em>注册时间</em>
+				<em>{{registerTimer}}</em>
+			</li>
+			<li v-on:click="location.href='/view/user/Set'">
+				<em>设置</em>
+				<em class="iconfont">&#xe630;</em>
+			</li>
+		</ul>
+	</div>
+</section>
+<ul class="nav">
+	<li onclick="location.href='/view/main/Index_m'">
+		<p class="iconfont">&#xe63b;</p>
+		<p>首页</p>
+	</li>
+	<li onclick="location.href='/view/main/Discover_m'">
+		<p class="iconfont">&#xe62b;</p>
+		<p>发现</p>
+	</li>
+	<li  class="sel" onclick="location.href='/view/user/UserInfo_m'">
+		<p class="iconfont">&#xe645;</p>
+		<p>我的</p>
+	</li>
+</ul>
+<script>
+var app = new Vue({
+	el:"#app",
+	data:{
+		nick_name:null,
+		username:null,
+		newsNum:0,
+		head_img:null,
+		registerTimer:null,
+		sex:null,
+		introduce:null
+	},
+	methods:{
+		
+	},
+	created(){
+		axios.post("/router/userInfo/",{}).then(res => {
+			console.log(res)
+			if(res.data.code == 1){
+				this.nick_name = res.data.data.nick_name;
+				this.username = res.data.data.username;
+				this.newsNum = res.data.data.noReadNewCound + res.data.data.noReadReplyNewsCound;
+				this.head_img = res.data.data.head_img;
+				this.registerTimer = res.data.data.registerTimer;
+				this.sex = res.data.data.sex;
+				this.introduce = res.data.data.introduce;
+			}
+		}).catch(function(err){
+			console.log(err);
+		});
+	},
+	mounted(){
+		
+	}
+});
+</script>
+</body>
+</html>

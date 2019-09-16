@@ -6,60 +6,43 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link href="/public/images/favicon.ico" rel="shortcut icon">
     <link rel="stylesheet" href="/public/css/choulouderen.css">
-    <title>消息系统</title>
+    <title>消息</title>
 </head>
 <body>
 <span id="header"></span>
 <section class="newSystem">
-    <dl class="l">
-        <dt class="sel"><span class="iconfont">&#xe63a;</span> 评论</dt>
-        <dt><span class="iconfont">&#xe609;</span> 系统消息</dt>
-    </dl>
+    <div class="l" id="aLs">
+        <a href="/view/user/news?index=0"><span class="iconfont">&#xe63a; </span> 文章评论 <em id="conmentCount">0</em></a>
+        <a href="/view/user/news?index=1"><span class="iconfont">&#xe663;</span> 评论回复 <em id="replyCount">0</em></a>
+       <!--  <a  onclick="javascript:alert('此功能作者正在玩命开发中...');"><span class="iconfont">&#xe609;</span> 系统消息</a> -->
+    </div>
     <div class="r">
-        <ul class="list">
+        <!-- <ul class="new_s" style="display: block">
             <li>
-                <div class="user">
+                <div class="oImg">
                     <img src="/public/images/user_head_5d250303d8dd903a50551d55.jpg?versions=2019-7-11 21:10:03" alt="">
-                    <p>夏日么么哒</p>
-                </div> 
-                <div class="cts">评论了你的 <a href=""> 《播报米克雅的额哈哈洗洗》 </a> </div>
-            </li>
-            <li>
-                <div class="user">
-                    <img src="/public/images/default_head.jpg" alt="">
-                    <p>路小北</p>
-                </div> 
-                <div class="cts">评论了你的 <a href=""> 《有新的水电费水电费是的风口浪尖水电费水电费水电费》</a></div>
-            </li>
-            <li>
-                <div class="user">
-                    <img src="/public/images/default_head.jpg" alt="">
-                    <p>路小北</p>
                 </div>
-                <div class="cts">评论了你的 <a href=""> 《好人一生平安啊》</a></div>
+                <div class="content">
+                    <div class="name">路小北 <span>2019-06-08</span></div>
+                    <div class="cts">评论了你的 <a href=""> 《播报米克雅的额哈哈洗洗》 </a> </div>
+                </div>
             </li>
             <li>
-                <div class="user">
+                <div class="oImg">
                     <img src="/public/images/user_head_5d250303d8dd903a50551d55.jpg?versions=2019-7-11 21:10:03" alt="">
-                    <p>夏日么么哒</p>
-                </div> 
-                <div class="cts">评论了你的 <a href=""> 《播报米克雅的额哈哈洗洗》 </a> </div>
-            </li>
-            <li>
-                <div class="user">
-                    <img src="/public/images/default_head.jpg" alt="">
-                    <p>路小北</p>
-                </div> 
-                <div class="cts">评论了你的 <a href=""> 《有新的水电费水电费是的风口浪尖水电费水电费水电费》</a></div>
-            </li>
-            <li>
-                <div class="user">
-                    <img src="/public/images/default_head.jpg" alt="">
-                    <p>路小北</p>
                 </div>
-                <div class="cts">评论了你的 <a href=""> 《好人一生平安啊》</a></div>
+                <div class="content">
+                    <div class="name">路小北 <span>2019-06-08</span> <button class="del">删除</button></div>
+                    <div class="cts">在 <a href=""> 《播报米克雅的额哈哈洗洗》 </a> 12 楼评论回复你说：去吃屎吧，再也不见了，我不想看到你，哈哈哈哈哈 </div>
+                </div>
             </li>
-        </ul>
+        </ul> -->
+        <!-- 消息列表 -->
+        <ul class="new_s no_style" id="newList"></ul>
+        <ul class="new_s no_style" id="playList"></ul>
+        <div class="num">共 <span id="num">0</span> 条数据</div>
+        <div class="btns" id="moreBtns"><button onclick="queryNews_fun('more')">查看更多</button></div>
+        <div class="btns" id="moreBtns2"><button onclick="queryReply_fun('more')">查看更多</button></div>
     </div>
 </section>
 <script src="/public/js/common.js"></script>
@@ -67,6 +50,141 @@
     window.onload = function(){
         /* 获取头部信息 */
         get_head_foot();
+
+        var replyCount = document.getElementById("replyCount");
+        var noReadReplyNewsCound = getQueryVariable("noReadReplyNewsCound");
+        var aLs = document.getElementById("aLs").children;
+        var index = getQueryVariable("index");
+            aLs[index].className = "sel";
+            if(noReadReplyNewsCound > 0){
+                replyCount.innerHTML = noReadReplyNewsCound;
+                replyCount.style.display = "block";
+            }
+        /* 消息查询 */
+        var newList = document.getElementById("newList");
+        var playList = document.getElementById("playList");
+        var num = document.getElementById("num");
+        var moreBtns = document.getElementById("moreBtns");
+        var conmentCount = document.getElementById("conmentCount");
+        var queryNew = {page:1}
+        queryNews_fun = function(type){
+            if(type == "more"){
+                queryNew.page += 1;
+            }
+            $.ajax({
+                url:'/router/query_news',
+                data:queryNew,
+                success:function(res){
+                    if(res.code == 1){
+                        if(res.count > 10 && index == 0){
+                            moreBtns.style.display = "block";
+                        }
+
+                        if(res.noReadCount > 0){
+                            conmentCount.innerHTML = res.noReadCount;
+                            conmentCount.style.display = "block";
+                        }else{
+                            conmentCount.innerHTML = 0;
+                            conmentCount.style.display = "none";
+                        }
+
+                        var newStr = "";
+                        res.data.forEach(function(element,index){
+                            newStr += '<li><a target="_blank" href="/view/main/otherInfo?userID='
+                                   +  element.commentUser.id +'" class="oImg"><img src="'+element.commentUser.head_img+'"></a>'
+                                   + '<div class="content"><div class="name">'+element.commentUser.nick_name
+                                   + '<span>'+element.timer+'</span></div><div class="cts">评论了你的 '
+                                   + '<a target="_blank" href="/view/main/article_details?id='+ element.articleID.id+'"> 《 '
+                                   + element.articleID.tit +' 》 </a> 说:'+decodeURIComponent(element.commentID.content)+' </div></div></li>';
+                        });
+                        newList.innerHTML  = newList.innerHTML + newStr;
+                        num.innerHTML = res.count;
+                    }else if(res.code == 0){
+                        newList.innerHTML = res.message;
+                    }else if(res.code == 2){
+                        alert(res.message);
+                    }
+                }
+            });
+        }
+       
+       
+        /* 查询评论回复信息 */
+        var queryReply = {page:1};
+        var moreBtns2 = document.getElementById("moreBtns2");
+        queryReply_fun = function(type){
+            if(type == "more"){
+                queryReply.page += 1;
+            }
+            $.ajax({
+                url:'/router/queryReply',
+                data:queryReply,
+                success:function(res){
+                    if(res.code == 1){
+
+                        if(res.count > 10 && index == 1){
+                            moreBtns2.style.display = "block";
+                        }
+
+                        var delBtnStr = "";
+                        var replyStr = "";
+                        res.data.forEach(function(element,index){
+                            
+                            if(element.armourUserID.id == element.partyUserID.id){
+                                delBtnStr = '<button reply_commentid="'+element.replyCommentID.id+'" id="'+element.id+'" onclick="drop_reply(this)" class="del">删除</button>';
+                            }else{
+                                delBtnStr = "";
+                            }
+                            replyStr += '<li><a target="_blank" href="/view/main/otherInfo?userID='
+                                     + element.armourUserID.id +'" class="oImg"><img src="'+element.armourUserID.head_img+'"></a>'
+                                     + '<div class="content"><div class="name">'+element.armourUserID.nick_name
+                                     + ' <span>'+ element.timer +'</span>'+delBtnStr+'</div>'
+                                     + '<div class="cts">在 <a target="_blank" href="/view/main/article_details?id='
+                                     + element.articleID.id +'"> 《'+element.articleID.tit+'》 </a> '+element.conmentID.floor
+                                     +' 楼评论@你说: '+element.replyCommentID.content+' </div></div></li>';
+          
+                        });
+                        playList.innerHTML  = playList.innerHTML + replyStr;
+                        num.innerHTML = res.count;
+                    }else if(res.code == 0){
+                        playList.innerHTML = res.message;
+                    }else if(res.code == 2){
+                        alert(res.message);
+                    }
+                }
+            });
+        }
+       
+        /* 查询信息 */
+        if(index == 0){
+            newList.style.display = "block";
+            queryNews_fun();
+        }else if(index == 1){
+            playList.style.display = "block";
+            queryReply_fun()
+        }
+
+        /* 删除发给自己的评论回复 */
+        drop_reply = function(obj){
+            var r = confirm("此操作不可逆，确认将永久丢失数据");
+            if(r == true){
+                $.ajax({
+                    url:'/router/drop_reply',
+                    data:{
+                        ReplyNewsID:obj.getAttribute("id"),
+                        replyCommentID:obj.getAttribute("reply_commentid"),
+                    },
+                    success:function(res){
+                        if(res.code == 1){
+                            num.innerHTML = num.innerHTML - 1;
+                            obj.parentNode.parentNode.parentNode.remove();
+                        }else{
+                            alert(res.message);
+                        }
+                    }
+                });
+            }
+        }
     }
 </script>
 </body>

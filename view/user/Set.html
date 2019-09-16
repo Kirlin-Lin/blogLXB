@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" style="background: #fff;">
+<head>
+	<meta charset="UTF-8">
+	<title>设置</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/public/css/Common.css">
+	<link rel="stylesheet" href="/public/css/Blogls.m.css">
+	<link rel="stylesheet" href="/public/font/iconfont.css">
+	<link href="/public/images/favicon.ico" rel="shortcut icon">
+	<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+	<script src="https://cdn.staticfile.org/axios/0.18.0/axios.min.js"></script>
+</head>
+<body>
+
+<section class="Set"  id="app">
+		<div class="head_img">
+				<div class="oImg">
+					<img :src="head_img">
+				</div>
+				<button v-on:click="showClipFun(1)">修改</button>
+			</div>
+	<header><button class="back" v-on:click="location.href='/view/user/UserInfo_m'">返回</button>消息</header>
+	
+	<ul class="list">
+		<li>
+			<h3>昵称</h3>
+		  	<div class="put"><input v-model="nick_name" type="text" placeholder="昵称"></div>
+		</li>
+		<li>
+			<h3>简介</h3>
+			<pre  contenteditable="true" v-html="introduce" ref="introduceStr"></pre>
+		</li>
+		<li>
+			<h3>性别</h3>
+		  	<div class="sex">
+		  		<input v-on:click="selSex(0)" :checked="sex=='女'?'checked':null" type="radio" name="sex">
+		  		<span>女</span>
+		  		<input v-on:click="selSex(1)"  :checked="sex=='男'?'checked':null" type="radio" name="sex">
+		  		<span>男</span>
+		  	</div>
+		</li>
+	</ul>
+	<div class="setBtns"><button v-on:click="updataInfo">保存</button></div>
+
+
+
+	<div :class="showClip==false?'none':'boxClipHeadImg'" id="boxClipHeadImg">
+		<div class="clipArea" id="clipArea"></div>
+		<!-- <input type="file" id="file"> -->
+		<div class="clipBtnBox">
+			<button class="select iconfont"> &#xe61e; <input type="file" id="file"></button>
+			<button v-on:click="showClipFun(0)" class="iconfont">&#xe67d;</button>
+			<button class="sure" id="clipBtn">使用</button>
+		</div>
+		<div class="view" id="view"></div>
+	</div>
+
+
+</section>
+
+<script src="/public/js/hammer.min.js"></script>
+<script src="/public/js/iscroll-zoom-min.js"></script>
+<script src="/public/js/lrz.all.bundle.js"></script>
+<script src="/public/js/PhotoClip.js"></script>
+<script>
+var app = new Vue({
+	el:"#app",
+	data:{
+		showClip:false,
+		nick_name:null,
+		introduce:null,
+		updateHeadImgUrl:null,
+		head_img:null,
+		sex:null
+	},
+	methods:{
+		showClipFun:function(n){
+			if(n == 1){
+				this.showClip = true;
+			}else{
+				this.showClip = false;
+			}
+		},
+		getUpdataImgFun:function(){
+			console.log("开始上传");
+			axios.post("/router/update_head/",{
+				src:this.updateHeadImgUrl.replace(/:/g,"@@@").replace(/\+/g,"---").replace(/=/g,"!!!")
+			}).then(res => {
+			if(res.data.code == 4){
+				window.location.reload();
+			}
+			}).catch(function(err){
+				console.log(err);
+			});	
+		},
+		selSex:function(n){
+			if(n == 0){
+				this.sex = "女";
+			}else if(n == 1){
+				this.sex = "男";
+			}
+		},
+		updataInfo:function(){
+			axios.post("/router/update_userInfo/",{
+				sex:this.sex,
+				nick_name:this.nick_name,
+				introduce:this.$refs.introduceStr.innerHTML
+			}).then(res => {
+				console.log(res)
+				if(res.data.code == 2){
+					alert(res.data.message);
+				}
+			}).catch(function(err){
+				console.log(err);
+			});	
+			
+		}
+	},
+	created(){
+		axios.post("/router/userInfo/",{}).then(res => {
+			console.log(res)
+			if(res.data.code == 1){
+				this.nick_name = res.data.data.nick_name;
+				this.username = res.data.data.username;
+				this.head_img = res.data.data.head_img;
+				this.sex = res.data.data.sex;
+				this.introduce = res.data.data.introduce;
+			}
+		}).catch(function(err){
+			console.log(err);
+		});	
+	},
+	mounted(){
+		var that = this;
+		var pc = new PhotoClip('#clipArea', {
+				size: 260,
+				outputSize: 640,
+				// 分别占宽度和高度的大小
+				//adaptive: ['60%', '80%'],
+				file: '#file',
+				view: '#view',
+				ok: '#clipBtn',
+				//img: 'img/mm.jpg',
+				loadStart: function() {
+					console.log('开始读取照片');
+				},
+				loadComplete: function() {
+					console.log('照片读取完成');
+					/* boxClipHeadImg.style.display = 'block'; */
+				},
+				done: function(dataURL) {
+					that.updateHeadImgUrl = dataURL;
+					that.showClip = false;
+					that.getUpdataImgFun();
+				},
+				fail: function(msg) {
+					alert(msg);
+				}
+			});
+	}
+});
+</script>
+</body>
+</html>                                                                                                                         

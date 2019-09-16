@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en" style="background: #f8f8f8">
 <head>
+    <script>if(window.screen.width < 420){
+        window.location.href = "/view/main/Login_m";
+    }</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -14,7 +17,7 @@
     <div class="sgin">
         <h1>登录</h1>
         <h1 class="message"  id="errMessage"></h1>
-        <ul class="put">
+        <ul class="put no_style">
             <li>
                 <p>账号</p>
                 <input type="text" id="username" placeholder="注册邮箱">
@@ -52,10 +55,10 @@
                 data:data,
                 success:function(res){
                     if(res.code == 3){
-                        errMessage.innerHTML = res.message + ",2秒中后将跳转到首页";
+                        errMessage.innerHTML = res.message + ",1秒中后将跳转到首页";
                         setTimeout(() => {
                             window.location.href = "/";
-                        }, 2000);
+                        }, 1000);
                     }else{
                         errMessage.innerHTML = res.message;
                     }

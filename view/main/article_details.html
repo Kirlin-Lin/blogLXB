@@ -1,15 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="html">
 <head>
+    <script>/* 获取url参数 */
+    function getQueryVariable(variable){
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        for (var i=0;i<vars.length;i++) {
+                var pair = vars[i].split("=");
+                if(pair[0] == variable){return pair[1];}
+        }
+        return(false);
+    }
+    if(window.screen.width < 420){
+        var id = getQueryVariable("id");
+        window.location.href = "/view/main/Index_m?id="+id;
+    }</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link href="/public/images/favicon.ico" rel="shortcut icon">
-    <link rel="stylesheet" href="../../public/css/choulouderen.css">
-   <!--  <link rel="stylesheet" href="/public/css/wangEditor.min.css"> -->
+    <link rel="stylesheet" href="/public/css/choulouderen.css">
+    <link rel="stylesheet" href="/public/css/highlight.pack.styles/atom-one-dark-reasonable.css">
     <title id="title">路生</title>
 </head>
-<body>
+<body id="body">
 <span id="header"></span>
 <section class="article_detailes">
     <!-- <span>
@@ -29,9 +43,9 @@
         </div>
     </span> -->
 
-    <h1 id="titName">你好</h1>
+    <h1 id="titName"></h1>
     <div class="userInfo">
-        <p class="oImg"><img id="headImg"></p>
+        <p class="oImg"><a target="_blank" id="headImg"></a></p>
         <dl>
             <dt class="name" id="nickName"></dt>
             <dt class="time_num">
@@ -53,44 +67,140 @@
 
     <div class="comment">
         <div class="nologin_comment" id="nologin_comment">
-            <p><a href="/view/main/login">登录</a><em>后发表评论</em></p>
+            <p><a target="_blank" href="/view/main/login">登录</a><em>后发表评论</em></p>
         </div>
         <div class="put">
-                <textarea id="commmentContent" placeholder="写下你的评论..."></textarea>
-              <div class="btn" id="commentBtn">
-                  <button class="cancel" id="cancelComment">取消</button>
-                  <button class="send" onclick="input_comment(this)">发送</button>
-              </div>
+            <textarea id="commmentContent" placeholder="写下你的评论..."></textarea>
+            <div class="sebtsf">
+                <div class="btn" id="commentBtn">
+                    <ul  open="false" class="emoji no_style" id="emoji">
+                        <li><img src="/public/emoji/emji_00.png" alt="" emji="emji00:"></li>
+                        <li><img src="/public/emoji/emji_01.png" alt="" emji="emji01:"></li>
+                        <li><img src="/public/emoji/emji_02.png" alt="" emji="emji02:"></li>
+                        <li><img src="/public/emoji/emji_03.png" alt="" emji="emji03:"></li>
+                        <li><img src="/public/emoji/emji_04.png" alt="" emji="emji04:"></li>
+                        <li><img src="/public/emoji/emji_05.png" alt="" emji="emji05:"></li>
+                        <li><img src="/public/emoji/emji_06.png" alt="" emji="emji06:"></li>
+                        <li><img src="/public/emoji/emji_07.png" alt="" emji="emji07:"></li>
+                        <li><img src="/public/emoji/emji_08.png" alt="" emji="emji08:"></li>
+                        <li><img src="/public/emoji/emji_09.png" alt="" emji="emji09:"></li>
+                        <li><img src="/public/emoji/emji_10.png" alt="" emji="emji10:"></li>
+                        <li><img src="/public/emoji/emji_11.png" alt="" emji="emji11:"></li>
+                        <li><img src="/public/emoji/emji_12.png" alt="" emji="emji12:"></li>
+                        <li><img src="/public/emoji/emji_13.png" alt="" emji="emji13:"></li>
+                        <li><img src="/public/emoji/emji_14.png" alt="" emji="emji14:"></li>
+                        <li><img src="/public/emoji/emji_15.png" alt="" emji="emji15:"></li>
+                    </ul>
+                    <button class="iconfont" onclick="showEmji(this)">&#xe64e;</button>
+                    <button class="cancel" id="cancelComment">取消</button>
+                    <button class="send" onclick="input_comment(this)">发送</button>
+                </div>
+            </div>
         </div>
 
          <h3 id="commentCoumnt">
             <!--  <em>精彩评论 (10)</em> -->
         </h3>
         <!-- <ul class="user_comment">
-            <li>
-                <div class="userInfo"><p class="oImg"><img src="../../public/images/user_head_5d143dd44c95135eb4b69ca5.jpg?versions=6/27/2019, 11:57:07 AM" alt=""></p><dl><dt class="name">小雪</dt><dt class="time_num"><em class="t">2019-07-03 15:40:17</em><em><span>12楼</span></em></dt></dl></div>
-                <p>你好吗</p>
+            <li onclick="reply_comment()">
+                <div class="userInfo">
+                    <p class="oImg">
+                        <img src="../../public/images/user_head_5d143dd44c95135eb4b69ca5.jpg?versions=6/27/2019, 11:57:07 AM" alt="">
+                    </p>
+                    <dl>
+                        <dt class="name">小雪</dt>
+                        <dt class="time_num">
+                            <em class="t">2019-07-03 15:40:17</em>
+                            <em><span>12楼</span></em>
+                            <button class="bs iconfont" 
+                            floor="3"
+                             commentid="123456789"
+                              userid="123456789" 
+                              partyuserid="55555"
+                              nick_name="小雪">&#xe60d; 回复</button>
+                        </dt>
+                    </dl>
+                </div>
+                <p>你好吗 <img src="/public/emoji/emji_09.png" alt="" emji="emji09;"> <img src="/public/emoji/emji_09.png" alt="" emji="emji09;"></p>
+                <div class="bs"></div>
                 <span class="del"><button onclick="drop_comment(this)" id="5d24fbb10dcdc2008c3fab1a">删除</button></span>
-              
-            </li>
-            <li>
-                <div class="userInfo"><p class="oImg"><img src="../../public/images/user_head_5d143dd44c95135eb4b69ca5.jpg?versions=6/27/2019, 11:57:07 AM" alt=""></p><dl><dt class="name">小雪</dt><dt class="time_num"><em class="t">2019-07-03 15:40:17</em><em><span>12楼</span></em></dt></dl></div>
-                <p>你好吗</p>
+                <dl class="conmmnent_hfList">
+                    <dt>
+                        <div class="ht"><a href="">路小北 </a> 回复 <a href=""> 华夏 </a>说：这样真好吗</div>
+                        <div class="bss"><span class="timer">2019-7-20</span><button class="iconfont"> &#xe60d; 回复</button></div>
+                    </dt>
+                    <dt>
+                        <div class="ht"><a href=""> 路小北 </a> 回复 <a href=""> 华夏 </a>说：这样真好吗</div>
+                        <div class="bss"><span class="timer">2019-7-20</span> <button class="iconfont"> &#xe60d; 回复</button></div>
+                    </dt>
+                </dl>
             </li>
         </ul> -->
-        <ul class="user_comment" id="user_comment"></ul>
+        <ul class="user_comment no_style" id="user_comment" onclick="reply_comment()"></ul>
         
-        <ul class="comment_pages" onclick="query_comment('more')" id="comment_pages">
+        <ul class="comment_pages no_style" onclick="query_comment('more')" id="comment_pages">
            <!--  <li class="sel">1</li>
             <li>2</li> -->
         </ul>
     </div>
 </section>
+
+<!-- 回复评论弹窗 -->
+<div class="reply_pop" id="reply_pop">
+   <!--  <div class="reply_tit">回复路小北</div> -->
+    <textarea id="replyContent" placeholder="写下你的评论..."></textarea>
+    <div class="btn">
+        <button class="cancel" onclick="closeReplyPop()">取消</button>
+        <button class="send" onclick="send_reply_comment()">回复</button>
+    </div>
+</div>
+
+<!-- 悬浮按钮 -->
+<div class="maodiao">
+    <a class="bo">
+        <div state="play" onclick="videoFun(this)"  class="audioArticle iconfont">&#xe61f;</div>
+        <audio class="none" id="audioMp3" loop controls="controls" 
+        autoplay="autoplay" src="/public/audio/linjunjie-niyaodebushiwo.mp3"></audio>
+    </a>
+    <a class="bo">
+        <div class="code_QR"><img id="code_QR"></div>
+        <p class="iconfont">&#xe615;</p>
+        <p>分享</p>
+    </a>
+    <a class="bo" href="#body">
+        <p class="iconfont">&#xe614;</p>
+        <p>返回顶部</p>
+    </a>
+    <a href="#commentCoumnt">
+        <p class="iconfont">&#xe60d;</p>
+        <p>查看评论</p>
+    </a>
+</div>
+
 <script charset="utf-8" src="/public/js/common.js"></script>
+<!-- <script charset="utf-8" src="/public/js/highlight.pack.js"></script> -->
 <script>
+/**/
+var audioMp3 = document.getElementById("audioMp3");
+function videoFun(obj){
+    var state = obj.getAttribute("state");
+        if(state == "play"){
+            audioMp3.pause();
+            obj.classList.add("stopAudio");
+            obj.setAttribute("state","pause");
+        }else if(state == "pause"){
+            audioMp3.play();
+            obj.classList.remove("stopAudio");
+            obj.setAttribute("state","play");
+        }
+}
+
+
+
  /* 获取头部和底部 */
  get_head_foot();
 
+ 
  /* 查询文章详情 */
 var titName = document.getElementById("titName");
 var title = document.getElementById("title");
@@ -104,6 +214,28 @@ var modify = document.getElementById("modify");
 var btnDel = document.getElementById("btnDel");
 var nologin_comment = document.getElementById("nologin_comment");
 var commmentContent = document.getElementById("commmentContent");
+var emoji = document.getElementById("emoji");
+var code_QR = document.getElementById("code_QR");
+
+/* 弹出表情 */
+showEmji = function(obg){
+    var open = emoji.getAttribute("open");
+    if(open == "false"){
+        emoji.style.display = "block";
+        emoji.setAttribute("open","true");
+    }else if(open == "true"){
+        emoji.style.display = "none";
+        emoji.setAttribute("open","false");
+    }
+}
+emoji.onclick = function(){
+    if(event.target.tagName == "IMG"){
+        var face = event.target.getAttribute("emji");
+        commmentContent.value = commmentContent.value + face;
+    }
+}
+
+/* 查询文章 */
 var id = getQueryVariable("id");
     query_article = function(userId){
         $.ajax({
@@ -111,24 +243,21 @@ var id = getQueryVariable("id");
             data:{id:id},
             success:function(res){
                 if(res.code == 1){
-                        if(userId == res.data.userId){
-                            modify.innerHTML = '<a  href="/view/user/modify_article?id='
-                                +res.data.id+'">编辑</a>';
-                            btnDel.innerHTML =  '<button onclick="drop_article()" class="iconfont"> &#xe600; 删除此文章</button>';
-                        }
-
-                        title.innerHTML = res.data.tit;
-                        titName.innerHTML = res.data.tit;
-                        headImg.src = res.data.head_img;
-                        nickName.innerHTML = res.data.nick_name;
-                        timer.innerHTML = res.data.timer;
-                        sees.innerHTML = res.data.num;
-
-                        content.innerHTML = res.data.content
-                                        .replace(/&quot;/g,'"')
-                                        .replace(/&lt;/g,"<")
-                                        .replace(/&gt;/g,">")
-                                        .replace(/&times;/g,":");
+                    if(userId == res.data.userId){
+                        modify.innerHTML = '<a target="_blank"  href="/view/user/modify_article?id='
+                            +res.data.id+'">编辑</a>';
+                        btnDel.innerHTML =  '<button onclick="drop_article()" class="iconfont"> &#xe600; 删除此文章</button>';
+                    }
+                    code_QR.setAttribute("src",res.data.QRCode);
+                    title.innerHTML = res.data.tit;
+                    titName.innerHTML = res.data.tit;
+                    headImg.setAttribute("otherid",res.data.userId);
+                    headImg.setAttribute("href","/view/main/otherInfo?userID="+res.data.userId);
+                    headImg.innerHTML = "<img src="+res.data.head_img+">";
+                    nickName.innerHTML = res.data.nick_name;
+                    timer.innerHTML = res.data.timer;
+                    sees.innerHTML = res.data.num;
+                    content.innerHTML = decodeURIComponent(res.data.content);
                 }else{
                     content.innerHTML = res.message;
                 }
@@ -148,6 +277,7 @@ function getQueryVariable(variable){
 }
 
 /* 个人信息查询 */
+var loginSate = 0;
 var userID = "";
 $.ajax({
     url:'/router/userInfo/',
@@ -157,6 +287,7 @@ $.ajax({
             commmentContent.style.display = "block";
             userID = res.data.userId;
             query_article(res.data.userId);
+            loginSate = 1;
         }else{
             nologin_comment.style.display = "block";
             query_article("user no login");
@@ -173,7 +304,11 @@ var commentCoumnt = document.getElementById("commentCoumnt");
 var currentPage = 1;
 query_comment = function(more){
     if(more == "more"){
-        currentPage = event.target.getAttribute('index');
+        if(event.target.tagName == "LI"){
+            currentPage = event.target.getAttribute('index');
+        }else{
+            return "";
+        }
     }
     $.ajax({
         url:'/router/ouputCommment/',
@@ -190,17 +325,59 @@ query_comment = function(more){
                 var commentStr = "";
                 res.data.forEach(element => {
                     var delStr = "";
+                    var commentReply = "";
+                   
                     if(userID == element.userInfo.userID){
                         delStr = '<span class="del"><button onclick="drop_comment(this)" id="'
                             +element.id+'">删除</button></span>';
                     }
-                    commentStr += '<li id="'+element.id+'"><div class="userInfo"><p class="oImg"><img src="'
-                        +element.userInfo.head_img
-                        +'"></p><dl><dt class="name">'
+                  
+                    var replyStr = "";
+                    var replyNum = "No";
+
+                    if(userID !== element.userInfo.userID){
+                        commentReply = '<button effect="reply" one="0" class="bs" '
+                        + 'floor="'+element.floor+'" commentid="'+element.id+'" replyNum="'+replyNum+'"  partyuserid="'
+                        + element.userInfo.userID+'" '
+                        + 'nick_name="'+element.userInfo.nick_name+'"> <span class="iconfont">&#xe60d;</span> 回复</button>';
+                    }
+                    if(element.replyComent.length > 0){
+                        let dtStr = "";
+                            replyNum = 'Yes';
+                            console.log("userID:"+userID);
+                            console.log("element.userInfo.userID:"+element.userInfo.userID);
+                          
+                        element.replyComent.forEach(emt => {
+                            var replyBStr = "";
+                            if(userID !== emt.armourUserID.id){
+                                replyBStr = '<button effect="reply"  replyNum="'+replyNum+'" nick_name="'+emt.armourUserID.nick_name+'" partyuserid="'
+                                  + emt.armourUserID.id+'" commentid="'+element.id+'" floor="'+emt.floor+'"> '
+                                  + ' <span class="iconfont">&#xe60d;</span> 回复</button>';
+                            }else{
+                                replyBStr = '<button id="'+emt.id+'" effect="del" replyNum="'+replyNum+'" nick_name="'+emt.armourUserID.nick_name+'" partyuserid="'
+                                  + emt.armourUserID.id+'" commentid="'+element.id+'" floor="'+emt.floor+'"> '
+                                  + ' <span class="iconfont">&#xe62c;</span> 删除</button>';
+                            }
+                            dtStr += '<dt><div class="ht"><a href="/view/main/otherInfo?userID='+emt.armourUserID.id
+                                  + '">'+emt.armourUserID.nick_name+' </a> @ '
+                                  + '<a href="/view/main/otherInfo?userID='+emt.partyUserID.id+'"> '
+                                  + emt.partyUserID.nick_name+' </a>说：'+emt.content+'</div>'
+                                  + '<div class="bss"><span class="timer">'+emt.timer+'</span>'
+                                  + replyBStr + '</div></dt>';
+                            
+                        });
+                        replyStr = '<dl  class="conmmnent_hfList">'+dtStr+'</dl>';
+                    }else{
+                        replyNum = 'No';
+                    }
+
+                    commentStr += '<li id="'+element.id+'"><div class="userInfo"><div class="oImg">'
+                        +'<a href="/view/main/otherInfo?userID='+element.userInfo.id+'"><img src="'+element.userInfo.head_img
+                        +'"></a></div><dl><dt class="name">'
                         +element.userInfo.nick_name
                         +'</dt><dt class="time_num"><em class="t">'
-                        +element.timer+' </em><em><span> '+element.floor+'楼</span></em></dt></dl></div><p>'
-                        +element.content+'</p>'+delStr+'</li>';
+                        +element.timer+' </em><em><span> '+element.floor+'楼</span></em>'+commentReply+'</dt></dl></div><p>'
+                        + decodeURIComponent(element.content)+'</p>'+delStr+ replyStr +'</li>';
                 });
                 user_comment.innerHTML = commentStr;
 
@@ -228,7 +405,6 @@ query_comment = function(more){
 }
 
 /* 写评论 */
-
 var commentBtn = document.getElementById("commentBtn");
 var cancelComment = document.getElementById("cancelComment");
     commmentContent.addEventListener("focus",function(){
@@ -237,14 +413,33 @@ var cancelComment = document.getElementById("cancelComment");
     cancelComment.addEventListener("click",function(){
         commentBtn.style.display = "none";
     });
+var commentFaces = ["emji00:","emji01:","emji02:","emji03:","emji04:","emji05:"
+                ,"emji06:","emji07:","emji08:","emji09:","emji10:"
+                ,"emji11:","emji12:","emji13:","emji14:","emji15:"];
     input_comment = function(obj){
         obj.setAttribute("disabled","disabled");
+        var commmentContentData = commmentContent.value;
+            for(var i=0;i<commentFaces.length;i++){
+                
+                var index = commmentContentData.indexOf(commentFaces[i]);
+                    if(index !== -1){
+                        var urlName = "";
+                        var regFace = new RegExp(commentFaces[i],"g");
+                            if(i < 10){
+                                urlName = "emji_0" + i;
+                            }else{
+                                urlName = "emji_" + i;
+                            }
+                            commmentContentData = commmentContentData.replace(regFace,'<img src="/public/emoji/'+urlName+'.png">');
+                    }
+            }
         $.ajax({
             url:'/router/inputCommment/',
             data:{
                 articleID:articleID,
                 userID:userID,
-                content:commmentContent.value
+                content:encodeURIComponent(commmentContentData),
+                otherID:headImg.getAttribute("otherid")
             },
             success:function(res){
                 obj.removeAttribute("disabled");
@@ -252,6 +447,8 @@ var cancelComment = document.getElementById("cancelComment");
                 commmentContent.value = '';
                 if(res.code == 1){
                     query_comment();
+                    emoji.style.display = "none";
+                    emoji.setAttribute("open","false");
                 }else{
                     alert(res.message);
                 }
@@ -273,7 +470,7 @@ drop_article = function(){
                     if(res.code == 1){
                         var rmt =  confirm(res.message);
                             if(rmt == true){
-                                window.location.href = '/view/user/user_info';
+                                window.location.href = '/view/user/user_info?userID='+userID;
                             }
                     }else{
                         alert(res.message);
@@ -292,7 +489,6 @@ drop_comment = function(obj){
                 url:'/router/drop_comment/',
                 data:{commentID:commentID},
                 success:function(res){
-                    console.log(res)
                     if(res.code == 1){
                         query_comment();
                     }else{
@@ -302,6 +498,147 @@ drop_comment = function(obj){
             });
         }
 }
+
+/* 弹出评论回复 */
+var reply_pop = document.getElementById("reply_pop");
+var html = document.getElementById("html");
+var replyContent = document.getElementById("replyContent");
+var replyCancel = document.getElementById("replyCancel");
+var replyObj = {content:""};
+var replynum = "";
+var replyInsetObj;
+var replyTarget;
+var repTagIndex;
+var one;
+
+/* 判断弹出输出框还是删除 */
+reply_comment = function(){
+    if(loginSate == 0){
+        window.location.href = "/view/main/login";
+    }else{
+        var e = event || window.event;
+        if(e.target.getAttribute("effect") == "reply"){
+            pop_inputReply_fun();
+        }else if(e.target.getAttribute("effect") == "del"){
+            var r = confirm("此操作不可逆，确认执行吗？");
+            if(r == true){
+                var ReplyCommentID = event.target.getAttribute("id");
+                $.ajax({
+                    url:'/router/drop_replyUser',
+                    data:{ReplyCommentID:ReplyCommentID},
+                    success:function(res){
+                        if(res.code == 1){
+                            var len = e.target.parentNode.parentNode .parentNode.children.length;
+                                if(len > 1){
+                                    e.target.parentNode.parentNode.remove();
+                                }else{
+                                    e.target.parentNode.parentNode.parentNode.remove();
+                                }
+                        }else{
+                            alert(res.message);
+                        }
+                    }
+                })
+            }
+        }
+    }
+}
+
+/* 删除评论回复 */
+/* 弹出输入框 */
+pop_inputReply_fun = function(){
+    var e = event || window.event;
+    one = e.target.getAttribute("one");
+    replynum = e.target.getAttribute("replynum");
+    console.log(replynum)
+    replyTarget = e.target;
+
+    if(one == 0){
+        replyInsetObj = e.target.parentNode.parentNode.parentNode.parentNode;
+    }else{
+        replyInsetObj = e.target.parentNode.parentNode.parentNode;
+        repTagIndex = [].indexOf.call(replyInsetObj.children, e.target.parentNode.parentNode);
+    }
+    
+    reply_pop.style.display = "block";
+    var nick_name = e.target.getAttribute("nick_name");
+        replyContent.value = "";
+        replyContent.setAttribute("placeholder","@"+nick_name+":");
+    let popsiton = {
+        'x':e.clientX,
+        'y':e.clientY
+    };
+    
+    reply_pop.style.left = e.clientX + 'px';
+    reply_pop.style.top = e.clientY + 'px';
+
+    replyObj.conmentID = event.target.getAttribute("commentid");
+    replyObj.partyUserID = event.target.getAttribute("partyuserid");
+    replyObj.floor = event.target.getAttribute("floor");
+}
+
+/* 关闭评论回复弹窗 */
+closeReplyPop = function(){
+    reply_pop.style.display = "none";
+}
+
+/* 发送回复  */
+send_reply_comment = function(){
+    replyObj.articleID = articleID;
+    replyObj.content = replyContent.value;
+
+    $.ajax({
+        url:'/router/reply_comment/',
+        data:replyObj,
+        success:function(res){
+            if(res.code == 1){
+                let emt = res.data;
+                    replyTarget.setAttribute("replyNum","Yes");
+                var replyBtn = "";
+                if(userID !== emt.armourUserID.id){
+                    replyBtn = '<button effect="reply" id="'+emt.id+'"   replyNum="Yes" nick_name="'+emt.armourUserID.nick_name+'" partyuserid="'
+                            + emt.armourUserID.id+'" commentid="'+emt.conmentID.id+'" floor="'+emt.floor+'"> '
+                            + '<span class="iconfont"> &#xe60d;</span> 回复</button>';
+                }else{
+                    replyBtn = '<button effect="del"  id="'+emt.id+'" class="iconfont" replyNum="Yes" nick_name="'+emt.armourUserID.nick_name+'" partyuserid="'
+                            + emt.armourUserID.id+'" commentid="'+emt.conmentID.id+'" floor="'+emt.floor+'"> '
+                            + ' <span class="iconfont">&#xe62c;</span> 删除</button>';
+                }
+                console.log(replynum)
+                if(replynum == "Yes"){
+                    if(one == 0){
+                        var conmmnent_hfList = replyInsetObj.getElementsByClassName("conmmnent_hfList")[0];
+                        let oDt = document.createElement("dt");
+                        oDt.innerHTML  ='<div class="ht"><a href="">'+emt.armourUserID.nick_name+' </a> @ <a href=""> '
+                                  + emt.partyUserID.nick_name+' </a>说：'+emt.content+'</div>'
+                                  + '<div class="bss"><span class="timer">'+emt.timer+'</span>'
+                                  + replyBtn + '</div>';
+                        conmmnent_hfList.insertBefore(oDt,conmmnent_hfList.children[0]);
+                    }else{
+                        let oDt = document.createElement("dt");
+                        oDt.innerHTML  ='<div class="ht"><a href="">'+emt.armourUserID.nick_name+' </a> @ <a href=""> '
+                                  + emt.partyUserID.nick_name+' </a>说：'+emt.content+'</div>'
+                                  + '<div class="bss"><span class="timer">'+emt.timer+'</span>'
+                                  + replyBtn + '</div>';
+                                  replyInsetObj.insertBefore(oDt,replyInsetObj.children[repTagIndex]);
+                    }
+                }else if(replynum == "No"){
+                    let oDl = document.createElement("dl");
+                        oDl.className = "conmmnent_hfList";
+                        oDl.innerHTML = '<dt><div class="ht"><a href="">'+emt.armourUserID.nick_name+' </a> @ <a href=""> '
+                                  + emt.partyUserID.nick_name+' </a>说：'+emt.content+'</div>'
+                                  + '<div class="bss"><span class="timer">'+emt.timer+'</span>'
+                                  + replyBtn + '</div></dt>';
+                        replyInsetObj.appendChild(oDl);
+                }
+                closeReplyPop();
+            }else{
+                alert(res.message);
+            }
+        }
+    });
+}
+
 </script>
 </body>
 </html>

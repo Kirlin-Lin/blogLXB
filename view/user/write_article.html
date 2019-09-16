@@ -8,19 +8,23 @@
     <link rel="stylesheet" href="/public/css/choulouderen.css">
     <link rel="stylesheet" href="/public/css/wangEditor.min.css">
     <link rel="stylesheet" href="/public/css/loaders.css">
-    <title>写博客</title>
+    <link rel="stylesheet" href="/public/css/highlight.pack.styles/atom-one-dark-reasonable.css">
+    <title>写文章</title>
 </head>
 <body>
 <span id="header"></span>
 <dl class="write_article">
     <!-- 表桥 -->
     <dt class="l">
-        <div class="fls">
-            <p><span class="iconfont">&#xe602;</span>标签</p>
-            <ul class="list" id="category" onclick="selt_category(this)">
-                <!-- <li class="sel">node</li>
-                <li>css</li> -->
-            </ul>
+        <div class="fls"  onclick="selt_category(this)">
+            <div class="titLab"><span class="iconfont">&#xe63c; </span> 编程</div>
+            <ul class="list no_style" id="codeList"></ul>
+            <div class="titLab"><span class="iconfont">&#xe63e; </span> 生活</div>
+            <ul class="list no_style" id="liveList"></ul>
+            <div class="titLab"><span class="iconfont">&#xe68b; </span> 游戏</div>
+            <ul class="list no_style" id="gameList"></ul>
+            <div class="titLab"><span class="iconfont">&#xe628; </span> 博文</div>
+            <ul class="list no_style" id="literaryList"></ul>
         </div>
     </dt>
    
@@ -52,13 +56,49 @@
     </div>
 </span>
 <script src="/public/js/common.js"></script>
-<script type="text/javascript" src="/public/js/wangEditor.min.js"></script>
+<script  src="/public/js/highlight.pack.js"></script>
+<script  src="/public/js/wangEditor.min.js"></script>
 <script>
 /* 获取头部和底部 */
 get_head_foot();
 
 var E = window.wangEditor
 var editor = new E('#tabr','#editor');
+var oneOnfocus = 0;//第一次获取焦点时候，清空内容
+editor.customConfig.onfocus = function () {
+    if(oneOnfocus == 0){
+        editor.txt.clear();
+        oneOnfocus = 1;
+    }
+}
+/*配置颜色*/
+ editor.customConfig.colors = [
+        '#0c84e9',
+        '#e90c1c',
+        '#b90ad8',
+        '#1335e0',
+        '#000000',
+        '#eeece0',
+        '#1c487f',
+        '#4d80bf',
+        '#c24f4a',
+        '#8baa4a',
+        '#7b5ba1',
+        '#46acc8',
+        '#f9963b',
+        '#ffffff'
+    ]
+editor.customConfig.onchange = function (html) {
+    var pres = document.getElementsByTagName("pre");
+        for(var i=0;i<pres.length;i++){
+            console.log(pres[i].className)
+            if(pres[i].className.indexOf("hljs") == -1){
+                hljs.highlightBlock(pres[i]);
+            }
+        }
+}
+
+
 // editor.customConfig.showLinkImg = false;//隐藏网路图片链接
 // editor.customConfig.uploadImgShowBase64 = true   // 使用 base64 保存图片
 editor.customConfig.uploadImgServer = '/upload/images';
@@ -78,57 +118,81 @@ editor.create();
 
 /* 分类 */
 var articleObj  = {};
-var category = document.getElementById("category");
 var loading = document.getElementById("loading");
+var codeList = document.getElementById("codeList");
+var liveList = document.getElementById("liveList");
+var gameList = document.getElementById("gameList");
+var literaryList = document.getElementById("literaryList");
+
 /* 标签查询 */
 $.ajax({
     url:"/router/cetegory",
     data:{type:"all"},
     success:function(res){
         if(res.code == 3){
-            var str = "";
+            var codeStr = "";
+            var liveStr = "";
+            var gameStr = "";
+            var literaryStr = "";
+
             res.data.forEach((element,index) => {
-                str += '<li  index="'+index+'" cateName="'+element.cateName+'" id="'+element.id+'">'+element.cateName+'</li>';
+                if(element.type == "code"){
+                    codeStr += '<li  cateName="'+element.cateName+'" id="'+element.id+'">'+element.cateName+'</li>';
+                }else if(element.type == "live"){
+                    liveStr += '<li  cateName="'+element.cateName+'" id="'+element.id+'">'+element.cateName+'</li>';
+                }else if(element.type == "game"){
+                    gameStr += '<li  cateName="'+element.cateName+'" id="'+element.id+'">'+element.cateName+'</li>';
+                }else if(element.type == "literary"){
+                    literaryStr += '<li  cateName="'+element.cateName+'" id="'+element.id+'">'+element.cateName+'</li>';
+                }
+               
             });
-            category.innerHTML = str;
+            codeList.innerHTML = codeStr;
+            liveList.innerHTML = liveStr;
+            gameList.innerHTML = gameStr;
+            literaryList.innerHTML = literaryStr;
         }
     }
 });
 /* 选择标签*/
 var cateId = '';
 selt_category = function(obj){
-    var lis = obj.children;
-        articleObj.cateName = event.target.getAttribute("cateName");
-        cateId = event.target.getAttribute("id");
-       
-        for(var i=0;i<lis.length;i++){
-            lis[i].className = "";
+    var lis = obj.getElementsByTagName("li");
+        if(event.target.tagName == "LI"){
+            articleObj.cateName = event.target.getAttribute("cateName");
+            cateId = event.target.getAttribute("id");
+        
+            for(var i=0;i<lis.length;i++){
+                lis[i].className = "";
+            }
+            event.target.className = "sel";
         }
-        event.target.className = "sel";
 }
 
 /* 发布文章 */
 post_article_fun = function(){
     var imgs = document.getElementById("editor").getElementsByTagName("img");
-        
         if(imgs.length >= 1){
-            articleObj.showImg = getParamSrc("thumbnail_pic",imgs[0].getAttribute("src"));
+            if(imgs[0].getAttribute("src").indexOf("?") !== -1){
+                var showImgStr = getParamSrc("thumbnail_pic",imgs[0].getAttribute("src"));
+                articleObj.showImg = showImgStr;
+            }else{
+                articleObj.showImg = imgs[0].getAttribute("src");
+            }
         }else{
             articleObj.showImg = "no"
         }
-    var content = editor.txt.html()
-                .replace(/"/g,"&quot;")
-                .replace(/</g,"&lt;")
-                .replace(/>/g,"&gt;")
-                .replace(/:/g,"&times;");
+    var content =  encodeURIComponent(editor.txt.html());
+  
     var ptx = editor.txt.text();
     var json = editor.txt.getJSON();
+    let endPtx = 50+50*Math.random();
     var article_tit = document.getElementById("article_tit").value;
             loading.style.display = "block";
             articleObj.cateId = cateId;
             articleObj.tit = article_tit;
             articleObj.content = content;
-            articleObj.ptx = ptx.substr(0,100);
+            articleObj.ptx = encodeURIComponent(ptx.substr(0,endPtx) + "...");
             articleObj.type = "new";
             $.ajax({
                 url:"/router/post_article",

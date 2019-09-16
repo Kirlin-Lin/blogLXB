@@ -14,7 +14,7 @@
     <div class="sgin">
         <h1>注册</h1>
         <h1 class="message"  id="errMessage"></h1>
-        <ul class="put">
+        <ul class="put no_style">
             <li>
                 <p>账号</p>
                 <input type="text" id="username" placeholder="请用邮箱注册">
@@ -26,8 +26,8 @@
                 <b><em></em></b>
             </li>
             <li>
-                <p>重复密码</p>
-                <input type="password" id="repasswd" placeholder="密码">
+                <p>昵称</p>
+                <input type="text" id="nick_name" placeholder="用于个人形象展示">
                 <b><em></em></b>
             </li>
         </ul>
@@ -46,11 +46,11 @@ window.onload = function(){
     rgister = function(){
         var username = document.getElementById("username").value;
         var passwd = document.getElementById("passwd").value;
-        var repasswd = document.getElementById("repasswd").value;
+        var nick_name = document.getElementById("nick_name").value;
         var data = {
+            nick_name:nick_name,
             username:username,
-            passwd:passwd,
-            repasswd:repasswd
+            passwd:passwd
         }
         $.ajax({
             url:"/api/post/sign_up",

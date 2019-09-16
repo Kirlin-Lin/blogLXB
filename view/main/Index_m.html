@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" style="background: #eaeaea;">
+<head>
+	<meta charset="UTF-8">
+	<title>首页</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/public/css/Common.css">
+	<link rel="stylesheet" href="/public/css/Blogls.m.css">
+	<link rel="stylesheet" href="/public/font/iconfont.css">
+	<link href="/public/images/favicon.ico" rel="shortcut icon">
+	<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+	<script src="https://cdn.staticfile.org/axios/0.18.0/axios.min.js"></script>
+</head>
+<body style="padding-top:0">
+<span id="app">
+	<section class="index">
+		<!-- <ul class="list"> 
+			<li class="Himg">
+				<h3>浅谈javascript之事件、函数、方法、对象 各代表何含义，通俗解释及其之间的关联与区别</h3>
+				<xmp class="ptx">简单来说： 在javascript中，所有的事件都是通过函数来执行的,函数本身即是动作(针对事件来说)，也是方法(针对对象来说)！对象是指的谁...</xmp>	
+				<div class="showImg" style="background:url(https://www.blogls.com/public/details_pic/__5d309640ce512e26154ae6ff2019-07-21__23:38:56.jpg); background-size: cover "></div>
+				<div class="ohTm">
+					<span>作者: 路小北 </span>
+					<span>浏览:22</span>
+					<span>评论:22</span>
+				</div>
+			</li>
+			<li>
+				<h3>浅谈javascript之事件、函数、方法、对象 各代表何含义，通俗解释及其之间的关联与区别</h3>
+				<xmp class="ptx">简单来说： 在javascript中，所有的事件都是通过函数来执行的,函数本身即是动作(针对事件来说)，也是方法(针对对象来说)！对象是指的谁...</xmp>	
+				<div class="ohTm">
+					<span>作者: 路小北 </span>
+					<span>浏览:22</span>
+					<span>评论:22</span>
+				</div>
+			</li>
+		</ul> -->
+		<div class="list"> 
+			<a v-for="obj in articles"  v-bind:href="'/view/main/Detailes_m?id='+obj.id">
+				<p>{{obj.name}}</p>
+				<h3>{{obj.tit}}</h3>
+				<xmp class="ptx">{{decodeURIComponent(obj.ptx)}}</xmp>	
+				<div class="showImg" v-if="obj.showImg !== 'no'" 
+				 v-bind:style="{background:'url('+obj.showImg+') center center',backgroundSize:'cover'}"></div>
+				<div class="ohTm">
+					<span>作者: {{obj.userInfo.nick_name}} </span>
+					<span>浏览:{{obj.num}}</span>
+					<span>评论:{{obj.commentCount}}</span>
+				</div>
+			</a>
+		</div>
+	</section>
+	<div class="no_more" v-if="noMore"><em>没有更多啦</em></div>
+</span>
+<ul class="nav">
+	<li class="sel" onclick="location.href='/view/main/Index_m'">
+		<p class="iconfont">&#xe641;</p>
+		<p>首页</p>
+	</li>
+	<li onclick="location.href='/view/main/Discover_m'">
+		<p class="iconfont">&#xe62b;</p>
+		<p>发现</p>
+	</li>
+	<li onclick="location.href='/view/user/UserInfo_m'">
+		<p class="iconfont">&#xe60c;</p>
+		<p>我的</p>
+	</li>
+</ul>
+<script>
+var app = new Vue({
+	el:"#app",
+	data:{
+		page:0,
+		noMore:false,
+		articles:[],
+	},
+	methods:{
+		getData:function(){
+			this.page += 1;
+			axios.post("/m_business/index/artice_list",{
+			page:this.page
+			}).then(res => {
+				if(res.data.code == 2){
+					res.data.articles.forEach(element => {
+						this.articles.push(element);
+					});
+					if(res.data.articles.length < 10){
+						this.noMore = true;
+					}
+				}else{
+					this.noMore = true;
+				}
+			}).catch(function(err){
+				console.log(err);
+			});
+		}
+	},
+	mounted(){
+		this.getData();
+		var that = this;
+		window.onscroll = function(){
+   		//变量scrollTop是滚动条滚动时，距离顶部的距离
+   		var scrollTop = document.documentElement.scrollTop||document.body.scrollTop;
+   		//变量windowHeight是可视区的高度
+   		var windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
+   		//变量scrollHeight是滚动条的总高度
+   		var scrollHeight = document.documentElement.scrollHeight||document.body.scrollHeight;
+               //滚动条到底部的条件
+            if(scrollTop+windowHeight==scrollHeight){
+				that.getData();
+	         	console.log("距顶部"+scrollTop+"可视区高度"+windowHeight+"滚动条总高度"+scrollHeight);
+             }   
+        }
+	},
+	created(){
+		
+	}
+});
+</script>
+</body>
+</html>

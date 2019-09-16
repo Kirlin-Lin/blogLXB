@@ -8,22 +8,24 @@
     <link rel="stylesheet" href="/public/css/choulouderen.css">
     <link rel="stylesheet" href="/public/css/wangEditor.min.css">
     <link rel="stylesheet" href="/public/css/loaders.css">
-    <title>写博客</title>
+    <link rel="stylesheet" href="/public/css/highlight.pack.styles/atom-one-dark-reasonable.css">
+    <title>修改发布</title>
 </head>
 <body>
 <span id="header"></span>
 <dl class="write_article">
-    <!-- 表桥 -->
-    <dt class="l">
-        <div class="fls">
-            <p><span class="iconfont">&#xe602;</span>标签</p>
-            <ul class="list" id="category" onclick="selt_category(this)">
-                <!-- <li class="sel">node</li>
-                <li>css</li> -->
-            </ul>
+   <dt class="l">
+        <div class="fls"  onclick="selt_category(this)">
+            <div class="titLab"><span class="iconfont">&#xe63c; </span> 编程</div>
+            <ul class="list no_style" id="codeList"></ul>
+            <div class="titLab"><span class="iconfont">&#xe63e; </span> 生活</div>
+            <ul class="list no_style" id="liveList"></ul>
+            <div class="titLab"><span class="iconfont">&#xe68b; </span> 游戏</div>
+            <ul class="list no_style" id="gameList"></ul>
+            <div class="titLab"><span class="iconfont">&#xe628; </span> 博文</div>
+            <ul class="list no_style" id="literaryList"></ul>
         </div>
     </dt>
-   
     <dt class="r">
         <div class="name">
             <input id="article_tit" type="text" placeholder="输入标题">
@@ -52,7 +54,8 @@
     </div>
 </span>
 <script src="/public/js/common.js"></script>
-<script type="text/javascript" src="/public/js/wangEditor.min.js"></script>
+<script  src="/public/js/highlight.pack.js"></script>
+<script  src="/public/js/wangEditor.min.js"></script>
 <script>
 
 var category = document.getElementById("category");
@@ -65,33 +68,74 @@ get_head_foot();
 
 var E = window.wangEditor
 var editor = new E('#tabr','#editor');
+/*配置颜色*/
+ editor.customConfig.colors = [
+        '#0c84e9',
+        '#e90c1c',
+        '#b90ad8',
+        '#1335e0',
+        '#000000',
+        '#eeece0',
+        '#1c487f',
+        '#4d80bf',
+        '#c24f4a',
+        '#8baa4a',
+        '#7b5ba1',
+        '#46acc8',
+        '#f9963b',
+        '#ffffff'
+    ]
+editor.customConfig.onchange = function (html) {
+    var pres = document.getElementsByTagName("pre");
+        for(var i=0;i<pres.length;i++){
+            console.log(pres[i].className)
+            if(pres[i].className.indexOf("hljs") == -1){
+                hljs.highlightBlock(pres[i]);
+            }
+        }
+}
 // editor.customConfig.showLinkImg = false;//隐藏网路图片链接
 // editor.customConfig.uploadImgShowBase64 = true   // 使用 base64 保存图片
+
 editor.customConfig.uploadImgServer = '/upload/images';
 editor.customConfig.uploadImgMaxLength = 5;
 editor.customConfig.uploadImgMaxSize = 10 * 1024 * 1024;
 editor.customConfig.zIndex = 100;
 editor.customConfig.uploadImgHooks = {
+   /* before: function (xhr, editor, files) {
+        var oImg = new Image();
+        oImg.onload = function(){        
+            uploadImg_windth = oImg.naturalWidth ;
+            uploadImg_height = oImg.naturalHeight;
+        }
+        oImg.src=window.URL.createObjectURL(files[0]);
+    },*/
      // 如果服务器端返回的不是 {errno:0, data: [...]} 这种格式，可使用该配置
     // （但是，服务器端返回的必须是一个 JSON 格式字符串！！！否则会报错）
     customInsert: function (insertImg, result, editor){
         if(result.errno == 0){
-            console.log(result)
             insertImg(result.details_pic.url+"?thumbnail_pic="+result.thumbnail_pic.url);
         }
-        console.log(result)
     }
 };
+
 editor.create();
 
 
 
+/* 分类 */
+var articleObj  = {};
+var loading = document.getElementById("loading");
+var codeList = document.getElementById("codeList");
+var liveList = document.getElementById("liveList");
+var gameList = document.getElementById("gameList");
+var literaryList = document.getElementById("literaryList");
 
 /* 标签查询 */
 var cateId = "";
 var oldCateId = "";
 query_cate = function(cateID){
-    $.ajax({
+    /* $.ajax({
         url:"/router/cetegory",
         data:{type:"all"},
         success:function(res){
@@ -111,6 +155,47 @@ query_cate = function(cateID){
                 category.innerHTML = str;
             }
         }
+    }); */
+    /* 标签查询 */
+    $.ajax({
+        url:"/router/cetegory",
+        data:{type:"all"},
+        success:function(res){
+            if(res.code == 3){
+                var codeStr = "";
+                var liveStr = "";
+                var gameStr = "";
+                var literaryStr = "";
+
+                res.data.forEach((element,index) => {
+
+
+                    var liStr = "";
+                    if(cateID == element.id){
+                        oldCateId = element.id;
+                        cateId = element.id;
+                        liStr = '<li  class="sel" cateName="'+element.cateName+'" id="'+element.id+'">'+element.cateName+'</li>';
+                    }else{
+                        liStr = '<li  cateName="'+element.cateName+'" id="'+element.id+'">'+element.cateName+'</li>';
+                    }
+
+                    if(element.type == "code"){
+                        codeStr += liStr
+                    }else if(element.type == "live"){
+                        liveStr += liStr
+                    }else if(element.type == "game"){
+                        gameStr += liStr
+                    }else if(element.type == "literary"){
+                        literaryStr += liStr
+                    }
+                
+                });
+                codeList.innerHTML = codeStr;
+                liveList.innerHTML = liveStr;
+                gameList.innerHTML = gameStr;
+                literaryList.innerHTML = literaryStr;
+            }
+        }
     });
 }
 
@@ -122,12 +207,7 @@ $.ajax({
     data:{id:article_id},
     success:function(res){
         if(res.code == 1){
-            console.log(res)
-            var str = res.data.content
-                        .replace(/&quot;/g,'"')
-                        .replace(/&lt;/g,"<")
-                        .replace(/&gt;/g,">")
-                        .replace(/&times;/g,":");
+            var str = decodeURIComponent(res.data.content);
             article_tit.value = res.data.tit;
             editor.txt.html(str);
             query_cate(res.data.cateId);
@@ -137,36 +217,40 @@ $.ajax({
     }
 });
 
-/* 选择标签*/
 
+
+/* 选择标签*/
 selt_category = function(obj){
-    var lis = obj.children;
-        cateId = event.target.getAttribute("id");
-        articleObj.cateName = event.target.getAttribute("cateName");
-        for(var i=0;i<lis.length;i++){
-            lis[i].className = "";
+    var lis = obj.getElementsByTagName("li");
+        if(event.target.tagName == "LI"){
+            articleObj.cateName = event.target.getAttribute("cateName");
+            cateId = event.target.getAttribute("id");
+        
+            for(var i=0;i<lis.length;i++){
+                lis[i].className = "";
+            }
+            event.target.className = "sel";
         }
-        event.target.className = "sel";
 }
 
+
 /* 发布文章 */
-var articleObj  = {};
 post_article_fun = function(){
     var imgs = document.getElementById("editor").getElementsByTagName("img");
-        
         if(imgs.length >= 1){
-            articleObj.showImg = getParamSrc("thumbnail_pic",imgs[0].getAttribute("src"));
+            if(imgs[0].getAttribute("src").indexOf("?") !== -1){
+                var showImgStr = getParamSrc("thumbnail_pic",imgs[0].getAttribute("src"));
+                articleObj.showImg = showImgStr;
+            }else{
+                articleObj.showImg = imgs[0].getAttribute("src");
+            }
         }else{
             articleObj.showImg = "no"
         }
-    var content = editor.txt.html()
-                .replace(/"/g,"&quot;")
-                .replace(/</g,"&lt;")
-                .replace(/>/g,"&gt;")
-                .replace(/:/g,"&times;");
+
+    var content =  encodeURIComponent(editor.txt.html());
     var ptx = editor.txt.text();
     var json = editor.txt.getJSON();
-        console.log(content);
             loading.style.display = "block";
             articleObj.tit = document.getElementById("article_tit").value;
             articleObj.content = content;
@@ -179,7 +263,6 @@ post_article_fun = function(){
                 url:"/router/post_article",
                 data:articleObj,
                 success:function(res){
-                    console.log(res)
                     if(res.code == 6){
                         loadingTxt.innerHTML = res.message;
                         setTimeout(function(){

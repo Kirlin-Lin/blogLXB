@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" style="background: #eaeaea;">
+<head>
+	<meta charset="UTF-8">
+	<title>消息</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/public/css/Common.css">
+	<link rel="stylesheet" href="/public/css/Blogls.m.css">
+	<link rel="stylesheet" href="/public/font/iconfont.css">
+	<link href="/public/images/favicon.ico" rel="shortcut icon">
+	<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+	<script src="https://cdn.staticfile.org/axios/0.18.0/axios.min.js"></script>
+</head>
+<body>
+<section id="app">
+	<header><button class="back"  v-on:click="location.href='/view/user/UserInfo_m'">返回</button>消息</header>
+	<div class="commentNews" v-if="newCate == 1">
+		<ul class="list_once">
+			<li v-for="obj in newsArr">
+				<div class="oImg"><a ><img :src="obj.commentUser.head_img"></a></div>
+				<dl class="info">
+					<dt class="name">{{obj.commentUser.nick_name}}<span>{{obj.timer}}</span></dt>
+					<dt class="ct">评论了你的 <a :href="'/view/main/Detailes_m?id='+obj.articleID.id">《 {{obj.articleID.tit}} 》</a>说：
+						<span v-html="decodeURIComponent(obj.commentID.content)"></span></dt>
+				</dl>
+			</li>
+			<!-- <li>
+				<div class="oImg"><img src="https://www.blogls.com/public/images/user_head_5d2d446a82058621725223ba.jpg?versions=7/16/2019,%2011:31:42%20AM" alt=""></div>
+				<dl class="info">
+					<dt class="name">路小北 <span>2019-07-28</span></dt>
+					<dt class="ct">评论了你的 <a href="">《水电费》</a>说：
+						<img src="https://www.blogls.com/public/emoji/emji_02.png" alt="">
+						<img src="https://www.blogls.com/public/emoji/emji_02.png" alt="">
+						<img src="https://www.blogls.com/public/emoji/emji_02.png" alt="">
+						<img src="https://www.blogls.com/public/emoji/emji_02.png" alt="">
+					</dt>
+				</dl>
+			</li> -->
+		</ul>
+			<!-- 文章评论消息没有更多了 -->
+		<div class="no_more" v-if="no_moreNews == true || newsArr.length < 10"><em>没有更多</em></div>
+	</div>
+	<div class="commentNews" v-if="newCate == 2">
+		<ul class="list_once">
+			<li v-for="obj in replyArr">
+				<div class="oImg"><a href=""><img :src="obj.armourUserID.head_img"></a></div>
+				<dl class="info">
+					<dt class="name">{{obj.armourUserID.nick_name}}<span>{{obj.timer}}</span></dt>
+					<dt class="ct">在 <a :href="'/view/main/Detailes_m?id='+obj.articleID.id">《 {{obj.articleID.tit}} 》
+					</a> {{obj.conmentID.floor}} 楼评论@你说：{{decodeURIComponent(obj.replyCommentID.content)}}
+					</dt>
+				</dl>
+			</li>
+			<!-- <li>
+				<div class="oImg"><img src="https://www.blogls.com/public/images/user_head_5d2d446a82058621725223ba.jpg?versions=7/16/2019,%2011:31:42%20AM" alt=""></div>
+				<dl class="info">
+					<dt class="name">路小北 <span>2019-07-28</span></dt>
+					<dt class="ct">评论了你的 <a href="">《水电费》</a>说：
+						<img src="https://www.blogls.com/public/emoji/emji_02.png" alt="">
+						<img src="https://www.blogls.com/public/emoji/emji_02.png" alt="">
+						<img src="https://www.blogls.com/public/emoji/emji_02.png" alt="">
+						<img src="https://www.blogls.com/public/emoji/emji_02.png" alt="">
+					</dt>
+				</dl>
+			</li> -->
+		</ul>
+		<!-- 评论回复消息没有更多了 -->
+		<div class="no_more" v-if="no_moreReply == true || replyArr.length < 10"><em>没有更多</em></div>
+	</div>
+	<!-- labs导航切换 -->
+	<ul class="new_lab">
+		<li v-on:click="newCate = 1" v-bind:class="newCate == 1?'sel':null"><em>文章评论 <span v-if="noReadCount > 0">{{noReadCount}}</span></em></li>
+		<li v-on:click="newCate = 2" v-bind:class="newCate == 2?'sel':null">评论回复</li>
+	</ul>
+</section>
+<script>
+var app = new Vue({
+	el:"#app",
+	data:{
+		newCate:1,//1显示文章评论信息，2显示评论回复信息
+
+		newsPage:1,//文章评论第一页
+		newsArr:[],//文章评论列表
+		noReadCount:0,//文章评论未读消息
+		no_moreNews:false,//文章评论消息没有更多了
+
+		replyPage:1,//评论回复第一页
+		replyArr:[],//评论回复列表
+		no_moreReply:false,//评论回复消息没有更多了
+
+	},
+	methods:{
+		getNews:function(){
+			axios.post("/router/query_news",{
+				page:this.newsPage
+			}).then(res => {
+				if(res.data.code == 1){
+					res.data.data.forEach(element => {
+						this.newsArr.push(element);
+					});
+				}else if(res.data.code == 2){
+					this.no_moreNews = true;
+				}
+			}).catch(function(err){
+			});
+		},
+		getReply:function(n){
+			axios.post("/router/queryReply",{
+				page:this.replyPage
+			}).then(res => {
+				console.log(res)
+				if(res.data.code == 1){
+					res.data.data.forEach(element => {
+						this.replyArr.push(element);
+					});
+				}else if(res.data.code == 2){
+					this.no_moreReply = true;
+				}
+			}).catch(function(err){
+				console.log(err);
+			});
+		}
+	},
+	created(){
+		
+	},
+	mounted(){
+		var that = this;
+		that.getNews();
+		that.getReply();
+		window.onscroll = function(){
+	   		var scrollTop = document.documentElement.scrollTop||document.body.scrollTop;
+	   		var windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
+	   		var scrollHeight = document.documentElement.scrollHeight||document.body.scrollHeight;
+            if(scrollTop+windowHeight==scrollHeight){
+				if(that.newCate == 1 && that.no_moreNews == false){
+					that.newsPage += 1;
+					that.getNews();
+				}else if(that.newCate == 2 && that.no_moreReply == false){
+					console.log(that.replyPage)
+					that.replyPage += 1;
+					that.getReply();
+				}
+             }   
+        }
+	}
+});
+</script>
+</body>
+</html>                                                                                                                         

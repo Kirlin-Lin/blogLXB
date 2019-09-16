@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" style="background: #eaeaea;">
+<head>
+	<meta charset="UTF-8">
+	<title>发现</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/public/css/Common.css">
+	<link rel="stylesheet" href="/public/css/Blogls.m.css">
+	<link rel="stylesheet" href="/public/font/iconfont.css">
+	<link href="/public/images/favicon.ico" rel="shortcut icon">
+	<link rel="stylesheet" href="https://www.blogls.com/public/css/swiper.min.css">
+	<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+	<script src="https://cdn.staticfile.org/axios/0.18.0/axios.min.js"></script>
+	<script src="https://www.blogls.com/public/js/swiper.min.js"></script>
+</head>
+<body style="padding-top:0">
+<div class="banner_box">
+	<div class="banner">
+       <div class="swiper-container sipwer_01">
+           <div class="swiper-wrapper">
+               <div class="swiper-slide"><img src="https://www.blogls.com/public/images/banner_m_01.jpg" alt="banner"></div>
+               <div class="swiper-slide"><img src="https://www.blogls.com/public/images/banner_m_02.jpg" alt="banner"></div>
+           </div>
+           <div class="swiper-pagination"></div>
+       </div>
+   </div>
+</div>
+<!--  -->
+<section id="app">
+	<div class="discover_m">
+		<h3>推荐作者</h3>
+		<ul class="tj_users" v-on:click="alert('请用电脑登录https://www.blogls.com查看详细信息')">
+			<li v-for="obj in users_recommend">
+				<div class="oImg"><img :src="obj.head_img"></div>
+				<dl>
+					<dt class="name">{{obj.nick_name}}</dt>
+					<dt class="num">写了 <span>{{obj.count}}</span> 篇博文</dt>
+				</dl>
+			</li>
+			<!-- <li>
+				<div class="oImg"><img src="https://www.blogls.com/public/user.head.pic/user_head_5d0d285a422a74116ab5b674.jpg" alt=""></div>
+				<dl>
+					<dt class="name">路小北</dt>
+					<dt class="num">写了 <span>5</span> 篇博文</dt>
+				</dl>
+			</li> -->
+		</ul>
+	</div>
+</section>
+
+<ul class="nav">
+	<li onclick="location.href='/view/main/Index_m'">
+		<p class="iconfont">&#xe63b;</p>
+		<p>首页</p>
+	</li>
+	<li class="sel" onclick="location.href='/view/main/Discover_m'">
+		<p class="iconfont">&#xe62b;</p>
+		<p>发现</p>
+	</li>
+	<li  onclick="location.href='/view/user/UserInfo_m'">
+		<p class="iconfont">&#xe645;</p>
+		<p>我的</p>
+	</li>
+</ul>
+<script>
+/*swiper*/	
+var swiper = new Swiper('.sipwer_01', {
+	    pagination: {
+	        el: '.swiper-pagination',
+	        dynamicBullets: true,
+	    },
+	    loop : true,
+	    speed:1000,
+	    autoplay : {
+	        delay:3000
+	    },
+	});
+	/* swiper */
+var app = new Vue({
+	el:"#app",
+	data:{
+		users_recommend:[]
+	},
+	methods:{
+		
+	},
+	created(){
+		axios.post("/router/query_recommend",{recommend:"recommend"}).then(res => {
+			console.log(res)
+			if(res.data.code == 1){
+				res.data.data.forEach(element => {
+					this.users_recommend.push(element);
+				});
+			}
+		}).catch(function(err){
+			console.log(err);
+		});
+	},
+	mounted(){
+		
+	}
+});
+</script>
+</body>
+</html>
